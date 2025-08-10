@@ -334,6 +334,14 @@ svg.edges path.dimmed {
     font-size: 16px;
     margin: 0 0 2px;
 }
+.info h2 a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.info h2 a:hover {
+    color: var(--accent);
+}
 .info .code {
     color: var(--muted);
     font-size: 12px;

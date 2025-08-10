@@ -534,7 +534,16 @@
     function showInfo(id) {
         const d = nodes[id];
         if (!d) return;
-        infoTitle.textContent = d.title || d.label || d.code;
+
+        // Create a link for the title that goes to the MIT course catalog
+        const courseCode = d.code;
+        const catalogUrl = `http://student.mit.edu/catalog/search.cgi?search=${encodeURIComponent(
+            courseCode
+        )}`;
+
+        infoTitle.innerHTML = `<a href="${catalogUrl}" target="_blank" rel="noopener noreferrer">${
+            d.title || d.label || d.code
+        }</a>`;
         infoCode.textContent = d.code;
         infoArea.textContent = d.area.toUpperCase();
         infoDesc.textContent = d.description || "—";
