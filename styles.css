@@ -120,10 +120,10 @@
                 background: var(--impact);
             }
 
-            .stage-wrap {
-                position: relative;
-                height: calc(100% - 62px);
-            }
+              .mr-wrap {
+                  position: relative;
+                  height: calc(100% - 62px);
+              }
             .stage {
                 position: absolute;
                 inset: 0;
@@ -263,36 +263,38 @@
                 font-size: 12px;
             }
 
-            .gir {
-                max-width: 800px;
-                margin: 40px auto;
-                padding: 24px;
-                background: var(--panel);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                border-radius: 16px;
-                box-shadow: var(--shadow);
-                line-height: 1.6;
-            }
-            .gir h2 {
-                margin-top: 0;
-                font-size: 20px;
-            }
-            .gir section + section {
-                margin-top: 24px;
-            }
-            .gir h3 {
-                margin: 0 0 6px;
-                font-size: 16px;
-            }
-            .gir p {
-                margin: 0 0 8px;
-            }
-            .gir ul {
-                padding-left: 20px;
-            }
-            .gir li {
-                margin-bottom: 8px;
-            }
+              .mr {
+                  margin: 20px 16px 0;
+              }
+              .mr h2 {
+                  margin: 0 0 12px;
+                  font-size: 20px;
+              }
+              .gir {
+                  margin: 40px 16px;
+              }
+              .gir h2 {
+                  margin: 0 0 20px;
+                  font-size: 20px;
+              }
+              .gir-section + .gir-section {
+                  margin-top: 32px;
+              }
+              .gir-board {
+                  background: var(--panel);
+                  border: 1px solid rgba(255, 255, 255, 0.08);
+                  border-radius: 16px;
+                  box-shadow: var(--shadow);
+                  padding: 24px;
+                  overflow: auto;
+              }
+              .gir-grid {
+                  display: flex;
+                  gap: 22px;
+              }
+              .gir .node {
+                  cursor: default;
+              }
 
             .test-badge {
                 position: fixed;

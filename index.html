@@ -40,126 +40,131 @@
             </div>
         </header>
 
-        <div class="stage-wrap">
-            <div class="stage" id="stage">
-                <div class="board" id="board">
-                    <svg
-                        class="edges"
-                        id="edges"
-                        xmlns="http://www.w3.org/2000/svg"
-                    ></svg>
-                    <div class="grid" id="grid"></div>
+        <section class="mr" id="mr">
+            <h2>Major Requirements</h2>
+            <div class="mr-wrap">
+                <div class="stage" id="stage">
+                    <div class="board" id="board">
+                        <svg
+                            class="edges"
+                            id="edges"
+                            xmlns="http://www.w3.org/2000/svg"
+                        ></svg>
+                        <div class="grid" id="grid"></div>
 
-                    <!-- Info panel -->
-                    <aside
-                        class="info"
-                        id="info"
-                        role="dialog"
-                        aria-modal="false"
-                        aria-live="polite"
-                        aria-label="Course details"
-                    >
-                        <button class="close" id="infoClose" aria-label="Close">
-                            ✕
-                        </button>
-                        <div class="row">
-                            <div
-                                class="swatch"
-                                id="infoSwatch"
-                                aria-hidden="true"
-                            ></div>
-                            <div>
-                                <h2 id="infoTitle">Select a class</h2>
-                                <div class="code" id="infoCode"></div>
+                        <!-- Info panel -->
+                        <aside
+                            class="info"
+                            id="info"
+                            role="dialog"
+                            aria-modal="false"
+                            aria-live="polite"
+                            aria-label="Course details"
+                        >
+                            <button class="close" id="infoClose" aria-label="Close">
+                                ✕
+                            </button>
+                            <div class="row">
+                                <div
+                                    class="swatch"
+                                    id="infoSwatch"
+                                    aria-hidden="true"
+                                ></div>
+                                <div>
+                                    <h2 id="infoTitle">Select a class</h2>
+                                    <div class="code" id="infoCode"></div>
+                                </div>
+                                <span class="area" id="infoArea"></span>
                             </div>
-                            <span class="area" id="infoArea"></span>
-                        </div>
-                        <section>
-                            <h3>Description</h3>
-                            <p id="infoDesc">Click a node to see details.</p>
-                        </section>
-                        <section>
-                            <h3>Why this class?</h3>
-                            <p id="infoWhy">—</p>
-                        </section>
-                    </aside>
+                            <section>
+                                <h3>Description</h3>
+                                <p id="infoDesc">Click a node to see details.</p>
+                            </section>
+                            <section>
+                                <h3>Why this class?</h3>
+                                <p id="infoWhy">—</p>
+                            </section>
+                        </aside>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <section class="gir" id="gir">
             <h2>General Institute Requirements</h2>
 
-            <section>
+            <div class="gir-section">
                 <h3>Science Core</h3>
-                <ul>
-                    <li>
-                        <strong>Mathematics:</strong> 18.01 Calculus I and 18.02
-                        Calculus II (or approved variants).
-                    </li>
-                    <li>
-                        <strong>Physics:</strong> 8.01 Physics I and 8.02 Physics II
-                        (or variants).
-                    </li>
-                    <li>
-                        <strong>Chemistry:</strong> 5.111/5.112 Principles of
-                        Chemical Science or 3.091 Introduction to Solid-State
-                        Chemistry.
-                    </li>
-                    <li>
-                        <strong>Biology:</strong> 7.012, 7.015, 7.014, or 7.016.
-                    </li>
-                </ul>
-            </section>
+                <div class="gir-board">
+                    <div class="gir-grid">
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <section>
+            <div class="gir-section">
+                <h3>HASS</h3>
+                <div class="gir-board">
+                    <div class="gir-grid">
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gir-section">
                 <h3>Laboratory</h3>
-                <p>Complete at least one designated laboratory subject.</p>
-            </section>
+                <div class="gir-board">
+                    <div class="gir-grid">
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <section>
+            <div class="gir-section">
                 <h3>REST</h3>
-                <p>
-                    Take two Restricted Electives in Science and Technology.
-                    Examples include 6.1200 Mathematics for Computer Science,
-                    18.03 Differential Equations, and 6.3000 Signal Processing.
-                </p>
-            </section>
+                <div class="gir-board">
+                    <div class="gir-grid">
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <section>
-                <h3>Communication Requirement</h3>
-                <p>
-                    Four Communication-Intensive subjects: two CI-H or CI-HW and
-                    two CI-M in the major. Having passed the FEE, any CI-H or CI-HW
-                    may be taken in the first year.
-                </p>
-            </section>
-
-            <section>
-                <h3>HASS Requirement</h3>
-                <ul>
-                    <li>Eight Humanities, Arts, and Social Sciences subjects.</li>
-                    <li>
-                        Distribution: one each from HASS-H, HASS-A, and HASS-S.
-                    </li>
-                    <li>
-                        Concentration: three or four subjects in one field plus one
-                        or two additional HASS electives.
-                    </li>
-                    <li>
-                        At least two HASS subjects must also be CI-H or CI-HW, with
-                        the first completed in the first year.
-                    </li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>Physical Education &amp; Wellness</h3>
-                <p>
-                    Swim test and four quarters of physical education (crew
-                    satisfies this requirement).
-                </p>
-            </section>
+            <div class="gir-section">
+                <h3>Communication</h3>
+                <div class="gir-board">
+                    <div class="gir-grid">
+                        <div class="tier">
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <div class="test-badge" id="testBadge">Running tests…</div>
