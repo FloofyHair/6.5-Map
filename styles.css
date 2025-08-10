@@ -99,6 +99,7 @@ input[type="search"] {
     color: var(--muted);
 }
 .dot {
+    display: inline-block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -127,6 +128,9 @@ input[type="search"] {
     padding: 32px;
     cursor: default;
 }
+.stage > h2 {
+    margin: 0 0 12px;
+}
 .board {
     position: relative;
     width: 100%;
@@ -148,15 +152,12 @@ input[type="search"] {
 
 .gir-board {
     min-width: 260px;
-    min-height: auto;
-    /* Remove gradient/border to avoid sharp line in GIR */
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
+    min-height: 260px;
 }
 
 .gir {
     padding: 32px;
+    background: var(--bg);
 }
 
 .gir-row {
@@ -400,11 +401,12 @@ svg.edges path.dimmed {
     color: var(--text);
 }
 
-/* Make GIR grids flex-based so tier heights can vary per content */
+/* Make GIR grids consistent with MR */
 .gir-board .grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(var(--tier-count, 5), 1fr);
     gap: 22px;
     padding: 24px;
     width: 100%;
-    align-items: flex-start;
+    align-items: stretch;
 }
