@@ -30,7 +30,8 @@
                         #0b1020 60%
                     ),
                     var(--bg);
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
             header {
                 position: sticky;
@@ -260,6 +261,27 @@
                 right: 16px;
                 color: var(--muted);
                 font-size: 12px;
+            }
+
+            .gir {
+                max-width: 800px;
+                margin: 40px auto;
+                padding: 24px;
+                background: var(--panel);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 16px;
+                box-shadow: var(--shadow);
+                line-height: 1.6;
+            }
+            .gir h2 {
+                margin-top: 0;
+                font-size: 20px;
+            }
+            .gir ul {
+                padding-left: 20px;
+            }
+            .gir li {
+                margin-bottom: 8px;
             }
 
             .test-badge {
