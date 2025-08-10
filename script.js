@@ -513,9 +513,10 @@
     layout(document.getElementById("gir-rest"), girRest);
 
     // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
-    const girRows = document.querySelectorAll(".gir-row");
+    const girSection = document.querySelector('.section.gir');
+    const girRows = girSection ? girSection.querySelectorAll('.section-row') : null;
     if (girRows && girRows[0]) {
-        const blocks = girRows[0].querySelectorAll(".gir-block");
+        const blocks = girRows[0].querySelectorAll('.gir-block, .section-block');
         if (blocks.length >= 2) {
             const scienceCount = girScience.length; // 4
             const hassCount = girHass.length; // 5

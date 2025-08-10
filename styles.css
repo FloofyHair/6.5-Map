@@ -155,11 +155,12 @@ input[type="search"] {
     min-height: 260px;
 }
 
-.gir {
+.section {
     padding: 32px;
     background: var(--bg);
 }
 
+.section-row,
 .gir-row {
     display: flex;
     flex-wrap: nowrap;
@@ -168,6 +169,7 @@ input[type="search"] {
     overflow-x: auto;
 }
 
+.section-block,
 .gir-block {
     flex: 1;
     min-width: 260px;
@@ -387,12 +389,7 @@ svg.edges path.dimmed {
     }
 }
 
-.gir h2,
-.stage-wrap h2 {
-    font-size: 16px;
-    font-weight: 650;
-    margin: 0 0 12px;
-}
+.section-block h3,
 .gir-block h3,
 .board + h3 {
     font-size: 14px;
