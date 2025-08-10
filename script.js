@@ -163,8 +163,8 @@
         },
         Crew: {
             code: "Crew",
-            label: "Men's Lightweight Rowing",
-            title: "Men's Lightweight Rowing",
+            label: "Men's Lightweight Crew",
+            title: "Men's Lightweight Crew",
             area: "impact",
             color: "var(--impact)",
             description: "Best rowing team in the world.",
@@ -209,7 +209,10 @@
         { title: "Concentration", courses: [] },
         { title: "Electives", courses: [] },
     ];
-    const girCommunication = [{ title: "CI", courses: [] }];
+    const girCommunication = [
+        { title: "CI-H", courses: ["A24_00"] },
+        { title: "CI-M", courses: [] },
+    ];
     const girLab = [{ title: "Lab", courses: [] }];
     const girPE = [{ title: "PE", courses: ["Crew"] }];
     const girRest = [{ title: "REST", courses: [] }];
