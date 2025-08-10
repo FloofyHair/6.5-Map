@@ -277,6 +277,16 @@
                 margin-top: 0;
                 font-size: 20px;
             }
+            .gir section + section {
+                margin-top: 24px;
+            }
+            .gir h3 {
+                margin: 0 0 6px;
+                font-size: 16px;
+            }
+            .gir p {
+                margin: 0 0 8px;
+            }
             .gir ul {
                 padding-left: 20px;
             }
