@@ -149,6 +149,10 @@ input[type="search"] {
 .gir-board {
     min-width: 260px;
     min-height: 260px;
+    /* Remove gradient/border to avoid sharp line in GIR */
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 .gir {
@@ -181,15 +185,11 @@ input[type="search"] {
     flex-direction: column;
     gap: 16px;
     padding: 34px 16px 16px;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.02),
-        rgba(255, 255, 255, 0)
-    );
+    background: transparent;
     border: 1px dashed rgba(255, 255, 255, 0.07);
     border-radius: 14px;
     min-width: 140px;
-    min-height: 120px;
+    min-height: 64px;
 }
 .tier::before {
     content: attr(data-title);
@@ -303,7 +303,7 @@ svg.edges path.dimmed {
 
 /* Info panel */
 .info {
-    position: absolute;
+    position: fixed;
     bottom: 24px;
     left: 24px;
     width: 340px;
@@ -314,7 +314,7 @@ svg.edges path.dimmed {
     box-shadow: var(--shadow);
     padding: 16px;
     display: none;
-    z-index: 4;
+    z-index: 99;
 }
 .info.visible {
     display: block;
@@ -383,4 +383,18 @@ svg.edges path.dimmed {
     .board {
         min-width: 1000px;
     }
+}
+
+.gir h2,
+.stage-wrap h2 {
+    font-size: 16px;
+    font-weight: 650;
+    margin: 0 0 12px;
+}
+.gir-block h3,
+.board + h3 {
+    font-size: 14px;
+    font-weight: 650;
+    margin: 0 0 8px;
+    color: var(--text);
 }

@@ -279,14 +279,19 @@
         el.setAttribute("role", "button");
         el.setAttribute("aria-label", `${d.code}: ${d.title || d.label}`);
         el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
+        // Only MR nodes should isolate / show arrows; GIR nodes are not in nodes or will be ignored upstream
         el.addEventListener("click", (e) => {
             e.stopPropagation();
+            if (!el.closest('#grid')) return; // ignore clicks in GIR boards
+            if (!nodes[id]) return;
             toggleIsolation(id);
             showInfo(id);
         });
         el.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
+                if (!el.closest('#grid')) return; // ignore keyboard in GIR boards
+                if (!nodes[id]) return;
                 toggleIsolation(id);
                 showInfo(id);
             }
@@ -315,7 +320,7 @@
         svg.setAttribute("width", gridRect.width);
         svg.setAttribute("height", gridRect.height);
         const base = grid.getBoundingClientRect();
-        document.querySelectorAll(".node").forEach((el) => {
+        grid.querySelectorAll(".node").forEach((el) => {
             const b = el.getBoundingClientRect();
             positions[el.id] = {
                 cx: b.left - base.left + b.width / 2,
@@ -380,15 +385,11 @@
         if (!svg._edgePaths) svg._edgePaths = {};
         const edgePaths = svg._edgePaths;
 
+        // Only draw arrows for edges whose endpoints are present in the MR grid
+        const present = new Set(Array.from(grid.querySelectorAll('.node')).map(n => n.id));
+
         edges.forEach(([from, to]) => {
             const key = `${from}->${to}`;
-            const a = positions[from],
-                b = positions[to];
-            if (!a || !b) return;
-            const dx = b.cx - a.cx,
-                dy = b.cy - a.cy,
-                cx = a.cx + dx * 0.5,
-                cy = a.cy + dy * 0.5 - 18;
             let path = edgePaths[key];
             if (!path) {
                 path = document.createElementNS(
@@ -401,6 +402,20 @@
                 svg.appendChild(path);
                 edgePaths[key] = path;
             }
+
+            const a = positions[from], b = positions[to];
+            const bothPresent = present.has(from) && present.has(to) && a && b;
+            if (!bothPresent) {
+                path.classList.add('instant-hide');
+                return;
+            } else {
+                path.classList.remove('instant-hide');
+            }
+
+            const dx = b.cx - a.cx,
+                dy = b.cy - a.cy,
+                cx = a.cx + dx * 0.5,
+                cy = a.cy + dy * 0.5 - 18;
             path.setAttribute(
                 "d",
                 `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
@@ -496,6 +511,22 @@
     layout(document.getElementById("gir-lab"), girLab);
     layout(document.getElementById("gir-pe"), girPE);
     layout(document.getElementById("gir-rest"), girRest);
+
+    // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
+    const girRows = document.querySelectorAll(".gir-row");
+    if (girRows && girRows[0]) {
+        const blocks = girRows[0].querySelectorAll(".gir-block");
+        if (blocks.length >= 2) {
+            const scienceCount = girScience.length; // 4
+            const hassCount = girHass.length; // 5
+            const total = scienceCount + hassCount;
+            const sciencePct = (scienceCount / total) * 100;
+            const hassPct = (hassCount / total) * 100;
+            // First block is Science Core in markup
+            blocks[0].style.flex = `0 0 ${sciencePct}%`;
+            blocks[1].style.flex = `0 0 ${hassPct}%`;
+        }
+    }
     requestAnimationFrame(positionAll);
     new ResizeObserver(() => positionAll()).observe(grid);
     window.addEventListener("resize", positionAll);
@@ -544,7 +575,7 @@
             assert(!!searchInput, "#search exists");
             assert(!!grid && !!svg, "#grid and #edges exist");
             const countNodes = Object.keys(nodes).length;
-            const rendered = document.querySelectorAll(".node").length;
+            const rendered = grid.querySelectorAll(".node").length;
             assert(
                 rendered === countNodes,
                 `rendered ${rendered} nodes (expected ${countNodes})`
