@@ -242,7 +242,7 @@
                 outline-offset: 2px;
             }
 
-            /* Dimming for isolation/search */
+            /* Dimming */
             .node.dimmed {
                 opacity: 0.18 !important;
             }
@@ -280,6 +280,84 @@
                 border-radius: 10px;
                 font-size: 12px;
                 z-index: 99;
+            }
+
+            /* Info panel */
+            .info {
+                position: absolute;
+                bottom: 24px;
+                left: 24px;
+                width: 340px;
+                max-width: calc(100% - 48px);
+                background: #0f173a;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 14px;
+                box-shadow: var(--shadow);
+                padding: 16px;
+                display: none;
+                z-index: 4;
+            }
+            .info.visible {
+                display: block;
+            }
+            .info .row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .info .swatch {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+            }
+            .info h2 {
+                font-size: 16px;
+                margin: 0 0 2px;
+            }
+            .info .code {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .info .area {
+                margin-left: auto;
+                font-size: 11px;
+                padding: 4px 8px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: #0c1230;
+                color: var(--muted);
+            }
+            .info section {
+                margin-top: 12px;
+            }
+            .info section h3 {
+                margin: 0 0 6px;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: var(--muted);
+            }
+            .info p {
+                margin: 0;
+                font-size: 13px;
+                color: #e4ecff;
+            }
+            .info .close {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                border: 0;
+                background: transparent;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 18px;
+                line-height: 1;
+                border-radius: 8px;
+                padding: 4px;
+            }
+            .info .close:hover {
+                color: #fff;
             }
 
             @media (max-width: 1200px) {
@@ -331,6 +409,40 @@
                         xmlns="http://www.w3.org/2000/svg"
                     ></svg>
                     <div class="grid" id="grid"></div>
+
+                    <!-- Info panel -->
+                    <aside
+                        class="info"
+                        id="info"
+                        role="dialog"
+                        aria-modal="false"
+                        aria-live="polite"
+                        aria-label="Course details"
+                    >
+                        <button class="close" id="infoClose" aria-label="Close">
+                            ✕
+                        </button>
+                        <div class="row">
+                            <div
+                                class="swatch"
+                                id="infoSwatch"
+                                aria-hidden="true"
+                            ></div>
+                            <div>
+                                <h2 id="infoTitle">Select a class</h2>
+                                <div class="code" id="infoCode"></div>
+                            </div>
+                            <span class="area" id="infoArea"></span>
+                        </div>
+                        <section>
+                            <h3>Description</h3>
+                            <p id="infoDesc">Click a node to see details.</p>
+                        </section>
+                        <section>
+                            <h3>Why this class?</h3>
+                            <p id="infoWhy">—</p>
+                        </section>
+                    </aside>
                 </div>
             </div>
         </div>
@@ -344,77 +456,167 @@
                     A6_100A: {
                         code: "6.100A",
                         label: "Introduction to Computer Science Programming in Python",
+                        title: "Introduction to CS Programming in Python",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Introduction to computer science and programming. Students develop skills to program and use computational techniques to solve problems. Topics include: the notion of computation, Python, simple algorithms and data structures, object-oriented programming, testing and debugging, and algorithmic complexity. Lectures are viewed outside of class; in-class time is dedicated to problem-solving and discussion. Combination of 6.100A and 6.100B (or 16.C20) counts as REST subject.",
+                        why: "Required as part of the four fundamental subjects. Already ASEd.",
                     },
-                    A8_01: { code: "8.01", label: "Physics I", area: "phys" },
+                    A8_01: {
+                        code: "8.01",
+                        label: "Physics I",
+                        title: "Physics I",
+                        area: "phys",
+                        color: "var(--phys)",
+                        description:
+                            "Introduces classical mechanics. Space and time: straight-line kinematics; motion in a plane; forces and static equilibrium; particle dynamics, with force and conservation of momentum; relative inertial frames and non-inertial force; work, potential energy and conservation of energy; kinetic theory and the ideal gas; rigid bodies and rotational dynamics; vibrational motion; conservation of angular momentum; central force motions; fluid mechanics. Subject taught using the TEAL (Technology-Enabled Active Learning) format which features students working in groups of three, discussing concepts, solving problems, and doing table-top experiments with the aid of computer data acquisition and analysis.",
+                        why: "Prerequisite for other classes.",
+                    },
                     A18_01: {
                         code: "18.01",
                         label: "Calculus I",
+                        title: "Calculus I",
                         area: "math",
+                        color: "var(--math)",
+                        description:
+                            "Differentiation and integration of functions of one variable, with applications. Informal treatment of limits and continuity. Differentiation: definition, rules, application to graphing, rates, approximations, and extremum problems. Indefinite integration; separable first-order differential equations. Definite integral; fundamental theorem of calculus. Applications of integration to geometry and science. Elementary functions. Techniques of integration. Polar coordinates. L'Hopital's rule. Improper integrals. Infinite series: geometric, p-harmonic, simple comparison tests, power series for some elementary functions.",
+                        why: "Prerequisite for other classes.",
                     },
                     A6_1904: {
                         code: "6.1904",
                         label: "Introduction to Low-level Programming in C and Assembly",
+                        title: "Intro to Low-level Programming",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Introduction to C and assembly language for students coming from a Python background (6.100A). Studies the C language, focusing on memory and associated topics including pointers, how different data structures are stored in memory, the stack, and the heap in order to build a strong understanding of the constraints involved in manipulating complex data structures in modern computational systems. Studies assembly language to facilitate a firm understanding of how high-level languages are translated to machine-level instructions.",
+                        why: "Required as part of the four fundamental subjects. Could be 6.1903 instead.",
                     },
                     A6_3000: {
                         code: "6.3000",
                         label: "Signal Processing",
+                        title: "Signal Processing",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Fundamentals of signal processing, focusing on the use of Fourier methods to analyze and process signals such as sounds and images. Topics include Fourier series, Fourier transforms, the Discrete Fourier Transform, sampling, convolution, deconvolution, filtering, noise reduction, and compression. Applications draw broadly from areas of contemporary interest with emphasis on both analysis and design.",
+                        why: "Prerequisite for 6.9000.",
                     },
                     A6_1200: {
                         code: "6.1200",
                         label: "Mathematics for Computer Science",
+                        title: "Mathematics for Computer Science",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Elementary discrete mathematics for science and engineering, with a focus on mathematical tools and proof techniques useful in computer science. Topics include logical notation, sets, relations, elementary graph theory, state machines and invariants, induction and proofs by contradiction, recurrences, asymptotic notation, elementary analysis of algorithms, elementary number theory and cryptography, permutations and combinations, counting tools, and discrete probability.",
+                        why: "Required as part of the four fundamental subjects. Could be 6.120A instead but 6.1200 includes probability which fills prereqs for 6.1210.",
                     },
-                    A8_02: { code: "8.02", label: "Physics II", area: "phys" },
+                    A8_02: {
+                        code: "8.02",
+                        label: "Physics II",
+                        title: "Physics II",
+                        area: "phys",
+                        color: "var(--phys)",
+                        description:
+                            "Introduction to electromagnetism and electrostatics: electric charge, Coulomb's law, electric structure of matter; conductors and dielectrics. Concepts of electrostatic field and potential, electrostatic energy. Electric currents, magnetic fields and Ampere's law. Magnetic materials. Time-varying fields and Faraday's law of induction. Basic electric circuits. Electromagnetic waves and Maxwell's equations. Subject taught using the TEAL (Technology Enabled Active Learning) studio format which utilizes small group interaction and current technology to help students develop intuition about, and conceptual models of, physical phenomena.",
+                        why: "Prerequisite for other classes.",
+                    },
                     A18_02: {
                         code: "18.02",
                         label: "Calculus II",
+                        title: "Calculus II",
                         area: "math",
+                        color: "var(--math)",
+                        description:
+                            "Calculus of several variables. Vector algebra in 3-space, determinants, matrices. Vector-valued functions of one variable, space motion. Scalar functions of several variables: partial differentiation, gradient, optimization techniques. Double integrals and line integrals in the plane; exact differentials and conservative fields; Green's theorem and applications, triple integrals, line and surface integrals in space, Divergence theorem, Stokes' theorem; applications.",
+                        why: "Prerequisite for other classes.",
                     },
                     A6_1210: {
                         code: "6.1210",
                         label: "Introduction to Algorithms",
+                        title: "Introduction to Algorithms",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Introduction to mathematical modeling of computational problems, as well as common algorithms, algorithmic paradigms, and data structures used to solve these problems. Emphasizes the relationship between algorithms and programming, and introduces basic performance measures and analysis techniques for these problems. Enrollment may be limited.",
+                        why: "Required as part of the four fundamental subjects.",
                     },
                     A6_1910: {
                         code: "6.1910",
                         label: "Computation Structures",
+                        title: "Computation Structures",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Provides an introduction to the design of digital systems and computer architecture. Emphasizes expressing all hardware designs in a high-level hardware description language and synthesizing the designs. Topics include combinational and sequential circuits, instruction set abstraction for programmable hardware, single-cycle and pipelined processor implementations, multi-level memory hierarchies, virtual memory, exceptions and I/O, and parallel systems.",
+                        why: "Required as part of the four system design subjects.",
                     },
                     A6_2000: {
                         code: "6.2000",
                         label: "Electrical Circuits: Modeling and Design of Physical Systems",
+                        title: "Electrical Circuits",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "Fundamentals of linear systems, and abstraction modeling of multi-physics lumped and distributed systems using lumped electrical circuits. Linear networks involving independent and dependent sources, resistors, capacitors, and inductors. Extensions to include operational amplifiers and transducers. Dynamics of first- and second-order networks; analysis and design in the time and frequency domains; signal and energy processing applications. Design exercises. Weekly laboratory with microcontroller and transducers.",
+                        why: "Required as part of the four system design subjects.",
                     },
-                    A18_05: {
-                        code: "18.05",
-                        label: "Introduction to Probability and Statistics",
+                    A6_3700: {
+                        code: "6.3700",
+                        label: "Introduction to Probability",
+                        title: "Introduction to Probability",
                         area: "math",
+                        color: "var(--math)",
+                        description:
+                            "An introduction to probability theory, the modeling and analysis of probabilistic systems, and elements of statistical inference. Probabilistic models, conditional probability. Discrete and continuous random variables. Expectation and conditional expectation, and further topics about random variables. Limit Theorems. Bayesian estimation and hypothesis testing. Elements of classical statistical inference. Bernoulli and Poisson processes. Markov chains. Students taking graduate version complete additional assignments.",
+                        why: "Required as part of the two math subjects. Could be 18.05 instead but that class is bad. Could also be 6.3800 instead",
                     },
                     A18_06: {
                         code: "18.06",
                         label: "Linear Algebra",
+                        title: "Linear Algebra",
                         area: "math",
+                        color: "var(--math)",
+                        description:
+                            "Basic subject on matrix theory and linear algebra, emphasizing topics useful in other disciplines, including systems of equations, vector spaces, determinants, eigenvalues, singular value decomposition, and positive definite matrices. Applications to least-squares approximations, stability of differential equations, networks, Fourier transforms, and Markov processes. Uses linear algebra software. Compared with 18.700, more emphasis on matrix algorithms and many applications.",
+                        why: "Required as part of the two math subjects. Could also be 18.C06 instead",
                     },
                     A6_3100: {
                         code: "6.3100",
                         label: "Dynamical System Modeling and Control Design",
+                        title: "Control Design",
                         area: "ee",
+                        color: "var(--ee)",
+                        description:
+                            "A learn-by-design introduction to modeling and control of discrete- and continuous-time systems, from intuition-building analytical techniques to more computational and data-centric strategies. Topics include: linear difference/differential equations (natural frequencies, transfer functions); controller metrics (stability, tracking, disturbance rejection); analytical techniques (PID, root-loci, lead-lag, phase margin); computational strategies (state-space, eigen-placement, LQR); and data-centric approaches (state estimation, regression, and identification). Concepts are introduced with lectures and online problems, and then mastered during weekly labs. In lab, students model, design, test, and explain systems and controllers involving sensors, actuators, and a microcontroller (e.g., optimizing thrust-driven positioners or stabilizing magnetic levitators). Students taking graduate version complete additional problems and labs.",
+                        why: "Required as part of the four system design subjects.",
                     },
                     A6_9000: {
                         code: "6.9000",
                         label: "Engineering for Impact",
+                        title: "Engineering for Impact",
                         area: "impact",
+                        color: "var(--impact)",
+                        description:
+                            "Students work in teams to engineer hardware/software systems that solve important, challenging real-world problems. In pursuit of these projects, students engage at every step of the full-stack development process, from printed circuit board design to firmware to server to industrial design. Teams design and build functional prototypes of complete hardware/software systems. Grading is based on individual- and team-based elements. Satisfies 10 units of Institute Laboratory credit. Enrollment may be limited due to staffing and space requirements.",
+                        why: "Required as part of the four system design subjects.",
                     },
                 };
 
                 const tiers = [
                     ["A6_100A"],
-                    ["A8_01", "A18_01", "A6_3000", "A6_1904"],
+                    ["A8_01", "A18_01", "A6_1904"],
                     ["A6_1200", "A8_02", "A18_02"],
-                    ["A6_1210", "A6_1910", "A6_2000", "A18_05", "A18_06"],
+                    [
+                        "A6_1210",
+                        "A6_1910",
+                        "A6_2000",
+                        "A6_3700",
+                        "A18_06",
+                        "A6_3000",
+                    ],
                     ["A6_3100", "A6_9000"],
                 ];
 
@@ -431,7 +633,7 @@
                     ["A18_06", "A6_3100"],
                     ["A8_01", "A8_02"],
                     ["A18_01", "A18_02"],
-                    ["A18_02", "A18_05"],
+                    ["A18_02", "A6_3700"],
                     ["A18_02", "A18_06"],
                     ["A6_1910", "A6_9000"],
                     ["A6_2000", "A6_9000"],
@@ -446,6 +648,14 @@
                 const resetBtn = document.getElementById("reset");
                 const stage = document.getElementById("stage");
                 const testBadge = document.getElementById("testBadge");
+                const info = document.getElementById("info");
+                const infoClose = document.getElementById("infoClose");
+                const infoTitle = document.getElementById("infoTitle");
+                const infoCode = document.getElementById("infoCode");
+                const infoDesc = document.getElementById("infoDesc");
+                const infoWhy = document.getElementById("infoWhy");
+                const infoArea = document.getElementById("infoArea");
+                const infoSwatch = document.getElementById("infoSwatch");
 
                 // --- State ----------------------------------------------------------
                 const positions = {}; // id -> {cx,cy}
@@ -453,7 +663,7 @@
                 let currentSearch = "";
                 const nodeMatches = {}; // id -> boolean
 
-                // Build quick parent map (to -> [from...])
+                // Build parent map (to -> [from...])
                 const parents = new Map();
                 edges.forEach(([from, to]) => {
                     if (!parents.has(to)) parents.set(to, []);
@@ -491,15 +701,21 @@
                     el.id = id;
                     el.tabIndex = 0;
                     el.setAttribute("role", "button");
+                    el.setAttribute(
+                        "aria-label",
+                        `${d.code}: ${d.title || d.label}`
+                    );
                     el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
                     el.addEventListener("click", (e) => {
                         e.stopPropagation();
                         toggleIsolation(id);
+                        showInfo(id);
                     });
                     el.addEventListener("keydown", (e) => {
                         if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
                             toggleIsolation(id);
+                            showInfo(id);
                         }
                     });
                     return el;
@@ -510,7 +726,7 @@
                     tiers.forEach((col, i) => {
                         const tier = document.createElement("div");
                         tier.className = "tier";
-                        tier.dataset.title = i === 0 ? "ASEd" : `Tier ${i}`;
+                        tier.dataset.title = i === 0 ? "ASE" : `Tier ${i}`;
                         grid.appendChild(tier);
                         col.forEach((id) => tier.appendChild(makeNodeEl(id)));
                     });
@@ -546,7 +762,7 @@
                         (isolatedSet.has(from) && isolatedSet.has(to));
                     const searchOk =
                         !currentSearch || nodeMatches[from] || nodeMatches[to];
-                    return !(inIso && searchOk); // dim if either filter excludes it
+                    return !(inIso && searchOk);
                 }
 
                 function drawEdges() {
@@ -590,11 +806,9 @@
                         svg.appendChild(defs);
                     }
 
-                    // Keep a map of edge keys to path elements
                     if (!svg._edgePaths) svg._edgePaths = {};
                     const edgePaths = svg._edgePaths;
 
-                    // Create or update paths
                     edges.forEach(([from, to]) => {
                         const key = `${from}->${to}`;
                         const a = positions[from],
@@ -626,14 +840,12 @@
                             strokeFor(nodes[from].area)
                         );
                         path.setAttribute("marker-end", `url(#arrow-${cls})`);
-                        if (shouldDimEdge(from, to)) {
+                        if (shouldDimEdge(from, to))
                             path.classList.add("dimmed");
-                        } else {
-                            path.classList.remove("dimmed");
-                        }
+                        else path.classList.remove("dimmed");
                     });
 
-                    // Remove any paths for edges that no longer exist
+                    // Remove stale paths
                     Object.keys(edgePaths).forEach((key) => {
                         if (
                             !edges.some(
@@ -666,7 +878,6 @@
                     currentSearch = (searchInput?.value || "")
                         .trim()
                         .toLowerCase();
-                    // compute matches
                     Object.keys(nodes).forEach((id) => {
                         const d = nodes[id];
                         nodeMatches[id] =
@@ -675,7 +886,6 @@
                                 .toLowerCase()
                                 .includes(currentSearch);
                     });
-                    // dim nodes
                     document.querySelectorAll(".node").forEach((el) => {
                         const id = el.id;
                         const dimByIso = !!isolatedSet && !isolatedSet.has(id);
@@ -699,6 +909,24 @@
                     isolatedSet = null;
                     if (searchInput) searchInput.value = "";
                     applyVisibility();
+                    hideInfo();
+                }
+
+                // --- Info panel logic ----------------------------------------------
+                function showInfo(id) {
+                    const d = nodes[id];
+                    if (!d) return;
+                    infoTitle.textContent = d.title || d.label || d.code;
+                    infoCode.textContent = d.code;
+                    infoArea.textContent = d.area.toUpperCase();
+                    infoDesc.textContent = d.description || "—";
+                    infoWhy.textContent = d.why || "—";
+                    const color = d.color || strokeFor(d.area);
+                    infoSwatch.style.background = color;
+                    info.classList.add("visible");
+                }
+                function hideInfo() {
+                    info.classList.remove("visible");
                 }
 
                 // --- Init -----------------------------------------------------------
@@ -712,8 +940,10 @@
                 window.addEventListener("keydown", (e) => {
                     if (e.key === "Escape") clearAll();
                 });
+                infoClose.addEventListener("click", hideInfo);
+                // clicking outside the panel but inside board does not close it; Reset/ESC will.
 
-                // Panning, but NOT when clicking on interactive controls
+                // Panning (not on interactive controls)
                 let isPanning = false,
                     sx = 0,
                     sy = 0,
@@ -721,7 +951,7 @@
                     st = 0;
                 stage.addEventListener("pointerdown", (e) => {
                     if (e.button !== 0 && e.button !== 1) return;
-                    if (e.target.closest(".node, input, button")) return; // don't start panning when interacting
+                    if (e.target.closest(".node, input, button, .info")) return;
                     isPanning = true;
                     sx = e.clientX;
                     sy = e.clientY;
@@ -748,7 +978,6 @@
                     try {
                         assert(!!searchInput, "#search exists");
                         assert(!!grid && !!svg, "#grid and #edges exist");
-                        // nodes render
                         const countNodes = Object.keys(nodes).length;
                         const rendered =
                             document.querySelectorAll(".node").length;
@@ -756,14 +985,12 @@
                             rendered === countNodes,
                             `rendered ${rendered} nodes (expected ${countNodes})`
                         );
-                        // edges draw (count only <path> edges; markers are <polygon>)
                         positionAll();
                         const pathCount = svg.querySelectorAll("path").length;
                         assert(
                             pathCount === edges.length,
                             `rendered ${pathCount} edges (expected ${edges.length})`
                         );
-                        // extra tests: ensure markers exist and are polygons, not paths
                         const markerCount =
                             svg.querySelectorAll("defs marker").length;
                         const markerPolys =
@@ -782,7 +1009,6 @@
                             markerPaths === 0,
                             "marker should not contain path elements"
                         );
-                        // clear
                         clearAll();
                         testBadge.textContent = "Tests passed";
                         testBadge.style.color = "#a7f3d0";
@@ -792,7 +1018,6 @@
                         console.error(e);
                     }
                 }
-                // Run after first paint
                 setTimeout(runTests, 50);
             })();
         </script>
