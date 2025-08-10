@@ -30,7 +30,8 @@
                         #0b1020 60%
                     ),
                     var(--bg);
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
             header {
                 position: sticky;
@@ -132,8 +133,6 @@
             }
             .board {
                 position: relative;
-                min-width: 1200px;
-                min-height: 800px;
                 border-radius: 16px;
                 background: linear-gradient(
                     180deg,
@@ -142,6 +141,32 @@
                 );
                 border: 1px solid rgba(255, 255, 255, 0.06);
                 box-shadow: var(--shadow);
+            }
+
+            .mr-board {
+                min-width: 1200px;
+                min-height: 800px;
+            }
+
+            .gir-board {
+                min-width: 260px;
+                min-height: 160px;
+            }
+
+            .gir {
+                padding: 32px;
+            }
+
+            .gir-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 32px;
+                margin-bottom: 32px;
+            }
+
+            .gir-block {
+                flex: 1;
+                min-width: 260px;
             }
             .grid {
                 position: absolute;

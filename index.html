@@ -42,7 +42,7 @@
 
         <div class="stage-wrap">
             <div class="stage" id="stage">
-                <div class="board" id="board">
+                <div class="board mr-board" id="board">
                     <svg
                         class="edges"
                         id="edges"
@@ -85,33 +85,52 @@
                     </aside>
                 </div>
             </div>
-            <h2>General Institute Requirements</h2>
-            <h3>Science Core</h3>
-            <div class="board">
-                <div class="grid" id="gir-science"></div>
-            </div>
-            <h3>HASS</h3>
-            <div class="board">
-                <div class="grid" id="gir-hass"></div>
-            </div>
-            <h3>Communication</h3>
-            <div class="board">
-                <div class="grid" id="gir-communication"></div>
-            </div>
-            <h3>Laboratory</h3>
-            <div class="board">
-                <div class="grid" id="gir-lab"></div>
-            </div>
-            <h3>Physical Education</h3>
-            <div class="board">
-                <div class="grid" id="gir-pe"></div>
-            </div>
-            <h3>REST</h3>
-            <div class="board">
-                <div class="grid" id="gir-rest"></div>
-            </div>
         </div>
-        
+
+        <section class="gir">
+            <h2>General Institute Requirements</h2>
+            <div class="gir-row">
+                <div class="gir-block">
+                    <h3>Science Core</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-science"></div>
+                    </div>
+                </div>
+                <div class="gir-block">
+                    <h3>HASS</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-hass"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="gir-row">
+                <div class="gir-block">
+                    <h3>Communication</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-communication"></div>
+                    </div>
+                </div>
+                <div class="gir-block">
+                    <h3>Laboratory</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-lab"></div>
+                    </div>
+                </div>
+                <div class="gir-block">
+                    <h3>Physical Education</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-pe"></div>
+                    </div>
+                </div>
+                <div class="gir-block">
+                    <h3>REST</h3>
+                    <div class="board gir-board">
+                        <div class="grid" id="gir-rest"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <div class="test-badge" id="testBadge">Running tests…</div>
 
         <script src="script.js"></script>
