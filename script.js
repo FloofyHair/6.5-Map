@@ -151,6 +151,25 @@
                 "Students work in teams to engineer hardware/software systems that solve important, challenging real-world problems. In pursuit of these projects, students engage at every step of the full-stack development process, from printed circuit board design to firmware to server to industrial design. Teams design and build functional prototypes of complete hardware/software systems. Grading is based on individual- and team-based elements. Satisfies 10 units of Institute Laboratory credit. Enrollment may be limited due to staffing and space requirements.",
             why: "Required as part of the four system design subjects.",
         },
+        A24_00: {
+            code: "24.00",
+            label: "Problems of Philosophy",
+            title: "Problems of Philosophy",
+            area: "impact",
+            color: "var(--impact)",
+            description:
+                "Introduction to the problems of philosophy- in particular, to problems in ethics, metaphysics, theory of knowledge, and philosophy of logic, language, and science. A systematic rather than historical approach. Readings from classical and contemporary sources, but emphasis is on examination and evaluation of proposed solutions to the problems.",
+            why: "Required as part of the HASS Distribution requirement.",
+        },
+        Crew: {
+            code: "Crew",
+            label: "Men's Lightweight Rowing",
+            title: "Men's Lightweight Rowing",
+            area: "impact",
+            color: "var(--impact)",
+            description: "Best rowing team in the world.",
+            why: "Required as part of the PE requirement.",
+        },
     };
 
     const mrTiers = [
@@ -184,7 +203,7 @@
         { title: "Math", courses: ["A18_01", "A18_02"] },
     ];
     const girHass = [
-        { title: "Humanities", courses: ["A24.00"] },
+        { title: "Humanities", courses: ["A24_00"] },
         { title: "Arts", courses: [] },
         { title: "Social Sciencies", courses: [] },
         { title: "Concentration", courses: [] },
@@ -192,7 +211,7 @@
     ];
     const girCommunication = [{ title: "CI", courses: [] }];
     const girLab = [{ title: "Lab", courses: [] }];
-    const girPE = [{ title: "PE", courses: [] }];
+    const girPE = [{ title: "PE", courses: ["Crew"] }];
     const girRest = [{ title: "REST", courses: [] }];
 
     const edges = [
@@ -270,27 +289,54 @@
     }
 
     function makeNodeEl(id) {
-        if (!id || !nodes[id]) return document.createElement("div");
+        if (!id) return document.createElement("div");
+
         const d = nodes[id];
         const el = document.createElement("div");
-        el.className = `node ${areaClass(d.area)}`;
-        el.id = id;
-        el.tabIndex = 0;
-        el.setAttribute("role", "button");
-        el.setAttribute("aria-label", `${d.code}: ${d.title || d.label}`);
-        el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
-        el.addEventListener("click", (e) => {
-            e.stopPropagation();
-            toggleIsolation(id);
-            showInfo(id);
-        });
-        el.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
+
+        if (d) {
+            // MR node - has full data
+            el.className = `node ${areaClass(d.area)}`;
+            el.id = id;
+            el.tabIndex = 0;
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", `${d.code}: ${d.title || d.label}`);
+            el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
+
+            el.addEventListener("click", (e) => {
+                e.stopPropagation();
                 toggleIsolation(id);
                 showInfo(id);
-            }
-        });
+            });
+            el.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleIsolation(id);
+                    showInfo(id);
+                }
+            });
+        } else {
+            // GIR node - create placeholder
+            el.className = "node gir-node";
+            el.id = id;
+            el.tabIndex = 0;
+            el.setAttribute("role", "button");
+            el.setAttribute("aria-label", id);
+            el.innerHTML = `<span class="code">${id}</span><div class="label">GIR Course</div>`;
+
+            el.addEventListener("click", (e) => {
+                e.stopPropagation();
+                // GIR nodes can be clicked but don't trigger isolation/arrows
+                console.log("GIR node clicked:", id);
+            });
+            el.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    console.log("GIR node activated:", id);
+                }
+            });
+        }
+
         return el;
     }
 
@@ -315,7 +361,7 @@
         svg.setAttribute("width", gridRect.width);
         svg.setAttribute("height", gridRect.height);
         const base = grid.getBoundingClientRect();
-        document.querySelectorAll(".node").forEach((el) => {
+        grid.querySelectorAll(".node").forEach((el) => {
             const b = el.getBoundingClientRect();
             positions[el.id] = {
                 cx: b.left - base.left + b.width / 2,
@@ -380,15 +426,13 @@
         if (!svg._edgePaths) svg._edgePaths = {};
         const edgePaths = svg._edgePaths;
 
+        // Only draw arrows for edges whose endpoints are present in the MR grid
+        const present = new Set(
+            Array.from(grid.querySelectorAll(".node")).map((n) => n.id)
+        );
+
         edges.forEach(([from, to]) => {
             const key = `${from}->${to}`;
-            const a = positions[from],
-                b = positions[to];
-            if (!a || !b) return;
-            const dx = b.cx - a.cx,
-                dy = b.cy - a.cy,
-                cx = a.cx + dx * 0.5,
-                cy = a.cy + dy * 0.5 - 18;
             let path = edgePaths[key];
             if (!path) {
                 path = document.createElementNS(
@@ -401,6 +445,21 @@
                 svg.appendChild(path);
                 edgePaths[key] = path;
             }
+
+            const a = positions[from],
+                b = positions[to];
+            const bothPresent = present.has(from) && present.has(to) && a && b;
+            if (!bothPresent) {
+                path.classList.add("instant-hide");
+                return;
+            } else {
+                path.classList.remove("instant-hide");
+            }
+
+            const dx = b.cx - a.cx,
+                dy = b.cy - a.cy,
+                cx = a.cx + dx * 0.5,
+                cy = a.cy + dy * 0.5 - 18;
             path.setAttribute(
                 "d",
                 `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
@@ -496,9 +555,70 @@
     layout(document.getElementById("gir-lab"), girLab);
     layout(document.getElementById("gir-pe"), girPE);
     layout(document.getElementById("gir-rest"), girRest);
+
+    // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
+    const girSection = document.querySelector(".section.gir");
+    const girRows = girSection
+        ? girSection.querySelectorAll(".section-row")
+        : null;
+    if (girRows && girRows[0]) {
+        const blocks = girRows[0].querySelectorAll(
+            ".gir-block, .section-block"
+        );
+        if (blocks.length >= 2) {
+            const scienceCount = girScience.length; // 4
+            const hassCount = girHass.length; // 5
+            const total = scienceCount + hassCount;
+            const sciencePct = (scienceCount / total) * 100;
+            const hassPct = (hassCount / total) * 100;
+            // First block is Science Core in markup
+            blocks[0].style.flex = `0 0 ${sciencePct}%`;
+            blocks[1].style.flex = `0 0 ${hassPct}%`;
+        }
+    }
     requestAnimationFrame(positionAll);
     new ResizeObserver(() => positionAll()).observe(grid);
-    window.addEventListener("resize", positionAll);
+
+    // Also observe GIR containers for responsive sizing
+    const girContainers = document.querySelectorAll(
+        ".gir-board, .section-block"
+    );
+    girContainers.forEach((container) => {
+        new ResizeObserver(() => {
+            // Trigger responsive updates for GIR nodes
+            container.querySelectorAll(".node").forEach((node) => {
+                node.style.fontSize = window.innerWidth <= 1200 ? "11px" : "";
+            });
+        }).observe(container);
+    });
+
+    // Function to apply responsive sizing to all nodes
+    function applyResponsiveSizing() {
+        const isSmallScreen = window.innerWidth <= 1200;
+        const allNodes = document.querySelectorAll(".node");
+
+        allNodes.forEach((node) => {
+            if (isSmallScreen) {
+                node.style.padding = "10px 10px 10px 12px";
+                const code = node.querySelector(".code");
+                const label = node.querySelector(".label");
+                if (code) code.style.fontSize = "13px";
+                if (label) label.style.fontSize = "11px";
+                if (code) code.style.marginBottom = "4px";
+            } else {
+                node.style.padding = "";
+                const code = node.querySelector(".code");
+                const label = node.querySelector(".label");
+                if (code) code.style.fontSize = "";
+                if (label) label.style.fontSize = "";
+                if (code) code.style.marginBottom = "";
+            }
+        });
+    }
+
+    // Apply responsive sizing on load and resize
+    applyResponsiveSizing();
+    window.addEventListener("resize", applyResponsiveSizing);
 
     if (searchInput) searchInput.addEventListener("input", applyVisibility);
     if (resetBtn) resetBtn.addEventListener("click", clearAll);
@@ -544,7 +664,7 @@
             assert(!!searchInput, "#search exists");
             assert(!!grid && !!svg, "#grid and #edges exist");
             const countNodes = Object.keys(nodes).length;
-            const rendered = document.querySelectorAll(".node").length;
+            const rendered = grid.querySelectorAll(".node").length;
             assert(
                 rendered === countNodes,
                 `rendered ${rendered} nodes (expected ${countNodes})`

@@ -99,6 +99,7 @@ input[type="search"] {
     color: var(--muted);
 }
 .dot {
+    display: inline-block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -118,14 +119,16 @@ input[type="search"] {
 
 .stage-wrap {
     position: relative;
-    height: calc(100% - 62px);
+    height: auto;
 }
 .stage {
-    position: absolute;
-    inset: 0;
+    position: relative;
     overflow: auto;
     padding: 32px;
     cursor: default;
+}
+.stage > h2 {
+    margin: 0 0 12px;
 }
 .board {
     position: relative;
@@ -141,30 +144,23 @@ input[type="search"] {
     box-shadow: var(--shadow);
 }
 
-.mr-board {
-    min-width: 1200px;
-    min-height: 800px;
-}
-
-.gir-board {
-    min-width: 260px;
-    min-height: 260px;
-}
-
-.gir {
+.section {
     padding: 32px;
+    background: var(--bg);
 }
 
+.section-row,
 .gir-row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 32px;
     margin-bottom: 32px;
+    overflow-x: auto;
 }
 
+.section-block,
 .gir-block {
     flex: 1;
-    min-width: 260px;
 }
 .grid {
     display: grid;
@@ -175,21 +171,15 @@ input[type="search"] {
 }
 .tier {
     flex: 1 1 0;
-    min-width: 0;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 34px 16px 16px;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.02),
-        rgba(255, 255, 255, 0)
-    );
-    border: 1px dashed rgba(255, 255, 255, 0.07);
+    padding: 40px 14px 14px;
+    background: transparent !important;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
     border-radius: 14px;
-    min-width: 140px;
-    min-height: 120px;
+    min-height: 64px;
 }
 .tier::before {
     content: attr(data-title);
@@ -256,6 +246,16 @@ svg.edges {
 .node.impact {
     border-color: var(--impact);
 }
+.node.gir-node {
+    border-color: var(--muted);
+    background: var(--panel);
+    opacity: 0.8;
+}
+.node.gir-node:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
 .node:focus {
     outline: 2px solid #ffffff55;
     outline-offset: 2px;
@@ -303,7 +303,7 @@ svg.edges path.dimmed {
 
 /* Info panel */
 .info {
-    position: absolute;
+    position: fixed;
     bottom: 24px;
     left: 24px;
     width: 340px;
@@ -314,7 +314,7 @@ svg.edges path.dimmed {
     box-shadow: var(--shadow);
     padding: 16px;
     display: none;
-    z-index: 4;
+    z-index: 99;
 }
 .info.visible {
     display: block;
@@ -383,4 +383,40 @@ svg.edges path.dimmed {
     .board {
         min-width: 1000px;
     }
+    .gir-board,
+    .section-block {
+        min-width: 200px !important;
+    }
+    .node,
+    .node.gir-node {
+        padding: 10px 10px 10px 12px !important;
+    }
+    .node .code,
+    .node.gir-node .code {
+        font-size: 13px !important;
+        margin-bottom: 4px !important;
+    }
+    .node .label,
+    .node.gir-node .label {
+        font-size: 11px !important;
+    }
+}
+
+.section-block h3,
+.gir-block h3,
+.board + h3 {
+    font-size: 14px;
+    font-weight: 650;
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+/* Make GIR grids consistent with MR */
+.gir-board .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--tier-count, 5), 1fr);
+    gap: 22px;
+    padding: 24px;
+    width: 100%;
+    align-items: stretch;
 }
