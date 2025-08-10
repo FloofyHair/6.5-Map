@@ -153,19 +153,69 @@
                     },
                 };
 
-                const tiers = [
-                    ["A6_100A"],
-                    ["A8_01", "A18_01", "A6_1904"],
-                    ["A6_1200", "A8_02", "A18_02"],
-                    [
-                        "A6_1210",
-                        "A6_1910",
-                        "A6_2000",
-                        "A6_3700",
-                        "A18_06",
-                        "A6_3000",
-                    ],
-                    ["A6_3100", "A6_9000"],
+                const girNodeIds = [
+                    "GIR_SCI1",
+                    "GIR_SCI2",
+                    "GIR_SCI3",
+                    "GIR_SCI4",
+                    "GIR_HASS1",
+                    "GIR_HASS2",
+                    "GIR_HASS3",
+                    "GIR_HASS4",
+                    "GIR_COMM1",
+                    "GIR_LAB1",
+                    "GIR_PE1",
+                    "GIR_REST1",
+                ];
+                girNodeIds.forEach((id) => (nodes[id] = { ...nodes.A6_100A }));
+
+                const mrTiers = [
+                    { title: "ASE", courses: ["A6_100A"] },
+                    {
+                        title: "Tier 1",
+                        courses: ["A8_01", "A18_01", "A6_1904"],
+                    },
+                    {
+                        title: "Tier 2",
+                        courses: ["A6_1200", "A8_02", "A18_02"],
+                    },
+                    {
+                        title: "Tier 3",
+                        courses: [
+                            "A6_1210",
+                            "A6_1910",
+                            "A6_2000",
+                            "A6_3700",
+                            "A18_06",
+                            "A6_3000",
+                        ],
+                    },
+                    { title: "Tier 4", courses: ["A6_3100", "A6_9000"] },
+                ];
+
+                const girScience = [
+                    { title: "Biology", courses: ["GIR_SCI1"] },
+                    { title: "Chemistry", courses: ["GIR_SCI2"] },
+                    { title: "Physics", courses: ["GIR_SCI3"] },
+                    { title: "Math", courses: ["GIR_SCI4"] },
+                ];
+                const girHass = [
+                    { title: "HASS A", courses: ["GIR_HASS1"] },
+                    { title: "HASS B", courses: ["GIR_HASS2"] },
+                    { title: "HASS C", courses: ["GIR_HASS3"] },
+                    { title: "HASS D", courses: ["GIR_HASS4"] },
+                ];
+                const girCommunication = [
+                    { title: "CI", courses: ["GIR_COMM1"] },
+                ];
+                const girLab = [
+                    { title: "Lab", courses: ["GIR_LAB1"] },
+                ];
+                const girPE = [
+                    { title: "PE", courses: ["GIR_PE1"] },
+                ];
+                const girRest = [
+                    { title: "REST", courses: ["GIR_REST1"] },
                 ];
 
                 const edges = [
@@ -269,16 +319,18 @@
                     return el;
                 }
 
-                function layout() {
-                    grid.innerHTML = "";
-                    tiers.forEach((col, i) => {
+                function layout(gridEl, tierData) {
+                    gridEl.innerHTML = "";
+                    gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
+                    tierData.forEach((col) => {
                         const tier = document.createElement("div");
                         tier.className = "tier";
-                        tier.dataset.title = i === 0 ? "ASE" : `Tier ${i}`;
-                        grid.appendChild(tier);
-                        col.forEach((id) => tier.appendChild(makeNodeEl(id)));
+                        tier.dataset.title = col.title;
+                        gridEl.appendChild(tier);
+                        col.courses.forEach((id) =>
+                            tier.appendChild(makeNodeEl(id))
+                        );
                     });
-                    requestAnimationFrame(positionAll);
                 }
 
                 function positionAll() {
@@ -478,7 +530,17 @@
                 }
 
                 // --- Init -----------------------------------------------------------
-                layout();
+                layout(grid, mrTiers);
+                layout(document.getElementById("gir-science"), girScience);
+                layout(document.getElementById("gir-hass"), girHass);
+                layout(
+                    document.getElementById("gir-communication"),
+                    girCommunication
+                );
+                layout(document.getElementById("gir-lab"), girLab);
+                layout(document.getElementById("gir-pe"), girPE);
+                layout(document.getElementById("gir-rest"), girRest);
+                requestAnimationFrame(positionAll);
                 new ResizeObserver(() => positionAll()).observe(grid);
                 window.addEventListener("resize", positionAll);
 
