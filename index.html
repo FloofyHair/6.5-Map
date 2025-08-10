@@ -191,7 +191,13 @@
                 inset: 0;
                 pointer-events: none;
                 z-index: 0;
-                transition: opacity 2s ease;
+            }
+            .edges path {
+                transition: opacity 0.2s ease;
+            }
+            .edges path.instant-hide {
+                transition: none !important;
+                opacity: 0 !important;
             }
             .node {
                 position: relative;
@@ -283,7 +289,7 @@
             }
         </style>
     </head>
-    <body></body>
+    <body>
         <header>
             <div>
                 <h1>MIT 6-5 Prerequisite Map</h1>
@@ -405,7 +411,7 @@
                 };
 
                 const tiers = [
-                  ["A6_100A"],
+                    ["A6_100A"],
                     ["A8_01", "A18_01", "A6_3000", "A6_1904"],
                     ["A6_1200", "A8_02", "A18_02"],
                     ["A6_1210", "A6_1910", "A6_2000", "A18_05", "A18_06"],
@@ -500,15 +506,15 @@
                 }
 
                 function layout() {
-                  grid.innerHTML = "";
-                  tiers.forEach((col, i) => {
-                    const tier = document.createElement("div");
-                    tier.className = "tier";
-                    tier.dataset.title = i === 0 ? "ASEd" : `Tier ${i}`;
-                    grid.appendChild(tier);
-                    col.forEach((id) => tier.appendChild(makeNodeEl(id)));
-                  });
-                  requestAnimationFrame(positionAll);
+                    grid.innerHTML = "";
+                    tiers.forEach((col, i) => {
+                        const tier = document.createElement("div");
+                        tier.className = "tier";
+                        tier.dataset.title = i === 0 ? "ASEd" : `Tier ${i}`;
+                        grid.appendChild(tier);
+                        col.forEach((id) => tier.appendChild(makeNodeEl(id)));
+                    });
+                    requestAnimationFrame(positionAll);
                 }
 
                 function positionAll() {
@@ -544,45 +550,53 @@
                 }
 
                 function drawEdges() {
-                    svg.innerHTML = "";
-                    const defs = document.createElementNS(
-                        "http://www.w3.org/2000/svg",
-                        "defs"
-                    );
-                    for (const a of ["ee", "math", "phys", "impact"]) {
-                        const m = document.createElementNS(
+                    // Only create defs once
+                    let defs = svg.querySelector("defs");
+                    if (!defs) {
+                        defs = document.createElementNS(
                             "http://www.w3.org/2000/svg",
-                            "marker"
+                            "defs"
                         );
-                        m.setAttribute("id", `arrow-${a}`);
-                        m.setAttribute("viewBox", "0 0 10 10");
-                        m.setAttribute("refX", "9");
-                        m.setAttribute("refY", "5");
-                        m.setAttribute("markerWidth", "6");
-                        m.setAttribute("markerHeight", "6");
-                        m.setAttribute("orient", "auto-start-reverse");
-                        // Use polygon (not path) so test counts only edge paths
-                        const poly = document.createElementNS(
-                            "http://www.w3.org/2000/svg",
-                            "polygon"
-                        );
-                        poly.setAttribute("points", "0,0 10,5 0,10");
-                        poly.setAttribute(
-                            "fill",
-                            a === "math"
-                                ? cssVar("--math")
-                                : a === "phys"
-                                ? cssVar("--phys")
-                                : a === "impact"
-                                ? cssVar("--impact")
-                                : cssVar("--ee")
-                        );
-                        m.appendChild(poly);
-                        defs.appendChild(m);
+                        for (const a of ["ee", "math", "phys", "impact"]) {
+                            const m = document.createElementNS(
+                                "http://www.w3.org/2000/svg",
+                                "marker"
+                            );
+                            m.setAttribute("id", `arrow-${a}`);
+                            m.setAttribute("viewBox", "0 0 10 10");
+                            m.setAttribute("refX", "9");
+                            m.setAttribute("refY", "5");
+                            m.setAttribute("markerWidth", "6");
+                            m.setAttribute("markerHeight", "6");
+                            m.setAttribute("orient", "auto-start-reverse");
+                            const poly = document.createElementNS(
+                                "http://www.w3.org/2000/svg",
+                                "polygon"
+                            );
+                            poly.setAttribute("points", "0,0 10,5 0,10");
+                            poly.setAttribute(
+                                "fill",
+                                a === "math"
+                                    ? cssVar("--math")
+                                    : a === "phys"
+                                    ? cssVar("--phys")
+                                    : a === "impact"
+                                    ? cssVar("--impact")
+                                    : cssVar("--ee")
+                            );
+                            m.appendChild(poly);
+                            defs.appendChild(m);
+                        }
+                        svg.appendChild(defs);
                     }
-                    svg.appendChild(defs);
 
+                    // Keep a map of edge keys to path elements
+                    if (!svg._edgePaths) svg._edgePaths = {};
+                    const edgePaths = svg._edgePaths;
+
+                    // Create or update paths
                     edges.forEach(([from, to]) => {
+                        const key = `${from}->${to}`;
                         const a = positions[from],
                             b = positions[to];
                         if (!a || !b) return;
@@ -590,25 +604,45 @@
                             dy = b.cy - a.cy,
                             cx = a.cx + dx * 0.5,
                             cy = a.cy + dy * 0.5 - 18;
-                        const path = document.createElementNS(
-                            "http://www.w3.org/2000/svg",
-                            "path"
-                        );
+                        let path = edgePaths[key];
+                        if (!path) {
+                            path = document.createElementNS(
+                                "http://www.w3.org/2000/svg",
+                                "path"
+                            );
+                            path.setAttribute("fill", "none");
+                            path.setAttribute("stroke-width", "2");
+                            path.setAttribute("data-edge", key);
+                            svg.appendChild(path);
+                            edgePaths[key] = path;
+                        }
                         path.setAttribute(
                             "d",
                             `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
                         );
                         const cls = areaClass(nodes[from].area);
-                        path.setAttribute("fill", "none");
                         path.setAttribute(
                             "stroke",
                             strokeFor(nodes[from].area)
                         );
-                        path.setAttribute("stroke-width", "2");
                         path.setAttribute("marker-end", `url(#arrow-${cls})`);
-                        if (shouldDimEdge(from, to))
+                        if (shouldDimEdge(from, to)) {
                             path.classList.add("dimmed");
-                        svg.appendChild(path);
+                        } else {
+                            path.classList.remove("dimmed");
+                        }
+                    });
+
+                    // Remove any paths for edges that no longer exist
+                    Object.keys(edgePaths).forEach((key) => {
+                        if (
+                            !edges.some(
+                                ([from, to]) => `${from}->${to}` === key
+                            )
+                        ) {
+                            svg.removeChild(edgePaths[key]);
+                            delete edgePaths[key];
+                        }
                     });
                 }
 
