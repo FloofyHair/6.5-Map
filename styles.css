@@ -277,8 +277,14 @@
                   margin: 0 0 20px;
                   font-size: 20px;
               }
-              .gir-section + .gir-section {
-                  margin-top: 32px;
+              .gir-wrap {
+                  display: flex;
+                  gap: 32px;
+                  overflow-x: auto;
+                  padding-bottom: 4px;
+              }
+              .gir-section {
+                  flex: 0 0 auto;
               }
               .gir-board {
                   background: var(--panel);

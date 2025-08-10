@@ -569,3 +569,50 @@
                 setTimeout(runTests, 50);
             })();
 
+            (function () {
+                const sections = [
+                    { title: "Science Core", tiers: [[{}], [{}], [{}], [{}]] },
+                    { title: "HASS", tiers: [[{}], [{}], [{}], [{}]] },
+                    { title: "Laboratory", tiers: [[{}]] },
+                    { title: "REST", tiers: [[{}]] },
+                    { title: "Communication", tiers: [[{}]] },
+                ];
+                const wrap = document.getElementById("girWrap");
+                if (!wrap) return;
+                sections.forEach((sec) => {
+                    const sectionEl = document.createElement("div");
+                    sectionEl.className = "gir-section";
+                    const h3 = document.createElement("h3");
+                    h3.textContent = sec.title;
+                    sectionEl.appendChild(h3);
+                    const board = document.createElement("div");
+                    board.className = "gir-board";
+                    const grid = document.createElement("div");
+                    grid.className = "gir-grid";
+                    board.appendChild(grid);
+                    sec.tiers.forEach((tierNodes) => {
+                        const tier = document.createElement("div");
+                        tier.className = "tier";
+                        grid.appendChild(tier);
+                        tierNodes.forEach((nodeData) => {
+                            const node = document.createElement("div");
+                            node.className = "node";
+                            if (nodeData.code || nodeData.label) {
+                                node.innerHTML = `${
+                                    nodeData.code
+                                        ? `<span class=\"code\">${nodeData.code}</span>`
+                                        : ""
+                                }${
+                                    nodeData.label
+                                        ? `<div class=\"label\">${nodeData.label}</div>`
+                                        : ""
+                                }`;
+                            }
+                            tier.appendChild(node);
+                        });
+                    });
+                    sectionEl.appendChild(board);
+                    wrap.appendChild(sectionEl);
+                });
+            })();
+
