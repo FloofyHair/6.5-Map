@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>MIT 6-5 Prerequisite Map</title>
+        <style>
+            :root {
+                --bg: #0b1020;
+                --panel: #0f1530;
+                --card: #101935;
+                --text: #e8efff;
+                --muted: #9fb4d1;
+                --ee: #6fa8dc;
+                --math: #84d68a;
+                --phys: #f4c56a;
+                --impact: #ffa6d6;
+                --edge: #7bb0ff;
+                --shadow: 0 8px 24px rgba(0, 0, 0, 0.35),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                margin: 0;
+                font: 14px/1.45 Inter, system-ui, -apple-system, Segoe UI,
+                    Roboto, Helvetica, Arial;
+                color: var(--text);
+                background: radial-gradient(
+                        1200px 800px at 10% 0%,
+                        #111941 0%,
+                        #0b1020 60%
+                    ),
+                    var(--bg);
+                overflow: hidden;
+            }
+            header {
+                position: sticky;
+                top: 0;
+                z-index: 5;
+                background: linear-gradient(
+                    180deg,
+                    rgba(15, 21, 48, 0.9),
+                    rgba(15, 21, 48, 0.6)
+                );
+                backdrop-filter: blur(8px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+                display: flex;
+                gap: 16px;
+                align-items: center;
+                padding: 12px 16px;
+            }
+            h1 {
+                font-size: 16px;
+                font-weight: 650;
+                margin: 0;
+            }
+            .meta {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .controls {
+                margin-left: auto;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+            }
+            input[type="search"] {
+                background: #0d1330;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                color: var(--text);
+                padding: 8px 10px;
+                border-radius: 10px;
+                min-width: 260px;
+                outline: none;
+                box-shadow: var(--shadow);
+            }
+            .btn {
+                appearance: none;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: #0e173b;
+                color: var(--text);
+                padding: 8px 12px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+            .btn:hover {
+                filter: brightness(1.08);
+            }
+            .legend {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                background: #0c1230;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                color: var(--muted);
+            }
+            .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+            }
+            .dot.ee {
+                background: var(--ee);
+            }
+            .dot.math {
+                background: var(--math);
+            }
+            .dot.phys {
+                background: var(--phys);
+            }
+            .dot.impact {
+                background: var(--impact);
+            }
+
+            .stage-wrap {
+                position: relative;
+                height: calc(100% - 62px);
+            }
+            .stage {
+                position: absolute;
+                inset: 0;
+                overflow: auto;
+                padding: 32px;
+                cursor: default;
+            }
+            .board {
+                position: relative;
+                min-width: 1200px;
+                min-height: 800px;
+                border-radius: 16px;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.02),
+                    rgba(255, 255, 255, 0)
+                );
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                box-shadow: var(--shadow);
+            }
+            .grid {
+                position: absolute;
+                inset: 0;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 22px;
+                padding: 24px;
+            }
+            .tier {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                padding: 34px 16px 16px;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.02),
+                    rgba(255, 255, 255, 0)
+                );
+                border: 1px dashed rgba(255, 255, 255, 0.07);
+                border-radius: 14px;
+            }
+            .tier::before {
+                content: attr(data-title);
+                position: absolute;
+                top: 8px;
+                left: 14px;
+                color: var(--muted);
+                font-size: 12px;
+                letter-spacing: 0.2px;
+                background: #0e173b;
+                padding: 2px 8px;
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            svg.edges {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+                transition: opacity 2s ease;
+            }
+            .node {
+                position: relative;
+                z-index: 1;
+                padding: 12px 12px 12px 14px;
+                border-radius: 12px;
+                background: var(--card);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                box-shadow: var(--shadow);
+                transform-origin: center;
+                transition: opacity 0.2s ease;
+                cursor: pointer;
+            }
+            .node:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+            }
+            .node .code {
+                font-weight: 650;
+                letter-spacing: 0.2px;
+                display: block;
+                margin-bottom: 6px;
+            }
+            .node .label {
+                font-size: 12.5px;
+                color: #d9e5ff;
+            }
+            .node.ee {
+                border-color: var(--ee);
+            }
+            .node.math {
+                border-color: var(--math);
+            }
+            .node.phys {
+                border-color: var(--phys);
+            }
+            .node.impact {
+                border-color: var(--impact);
+            }
+            .node:focus {
+                outline: 2px solid #ffffff55;
+                outline-offset: 2px;
+            }
+
+            /* Dimming for isolation/search */
+            .node.dimmed {
+                opacity: 0.18 !important;
+            }
+            svg.edges path.dimmed {
+                opacity: 0;
+            }
+
+            .pill {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                background: #0e173b;
+                color: var(--muted);
+                padding: 8px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            .footer {
+                position: absolute;
+                bottom: 12px;
+                right: 16px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            .test-badge {
+                position: fixed;
+                bottom: 10px;
+                left: 10px;
+                background: #0e173b;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                color: var(--muted);
+                padding: 6px 10px;
+                border-radius: 10px;
+                font-size: 12px;
+                z-index: 99;
+            }
+
+            @media (max-width: 1200px) {
+                .board {
+                    min-width: 1000px;
+                }
+            }
+        </style>
+    </head>
+    <body></body>
+        <header>
+            <div>
+                <h1>MIT 6-5 Prerequisite Map</h1>
+                <div class="meta">
+                    Click a course to isolate its prerequisites • Search dims
+                    nodes & arrows • Esc to reset
+                </div>
+            </div>
+            <div class="controls">
+                <div class="legend">
+                    <span class="tag"
+                        ><span class="dot ee"></span>Course 6</span
+                    >
+                    <span class="tag"
+                        ><span class="dot math"></span>Math (18)</span
+                    >
+                    <span class="tag"
+                        ><span class="dot phys"></span>Physics (8)</span
+                    >
+                    <span class="tag"
+                        ><span class="dot impact"></span>Capstone/Other</span
+                    >
+                </div>
+                <input
+                    id="search"
+                    type="search"
+                    placeholder="Search: e.g., 6.1210, Linear Algebra…"
+                />
+                <button class="btn" id="reset">Reset</button>
+            </div>
+        </header>
+
+        <div class="stage-wrap">
+            <div class="stage" id="stage">
+                <div class="board" id="board">
+                    <svg
+                        class="edges"
+                        id="edges"
+                        xmlns="http://www.w3.org/2000/svg"
+                    ></svg>
+                    <div class="grid" id="grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-badge" id="testBadge">Running tests…</div>
+
+        <script>
+            (function () {
+                // --- Data ------------------------------------------------------------
+                const nodes = {
+                    A6_100A: {
+                        code: "6.100A",
+                        label: "Introduction to Computer Science Programming in Python",
+                        area: "ee",
+                    },
+                    A8_01: { code: "8.01", label: "Physics I", area: "phys" },
+                    A18_01: {
+                        code: "18.01",
+                        label: "Calculus I",
+                        area: "math",
+                    },
+                    A6_1904: {
+                        code: "6.1904",
+                        label: "Introduction to Low-level Programming in C and Assembly",
+                        area: "ee",
+                    },
+                    A6_3000: {
+                        code: "6.3000",
+                        label: "Signal Processing",
+                        area: "ee",
+                    },
+                    A6_1200: {
+                        code: "6.1200",
+                        label: "Mathematics for Computer Science",
+                        area: "ee",
+                    },
+                    A8_02: { code: "8.02", label: "Physics II", area: "phys" },
+                    A18_02: {
+                        code: "18.02",
+                        label: "Calculus II",
+                        area: "math",
+                    },
+                    A6_1210: {
+                        code: "6.1210",
+                        label: "Introduction to Algorithms",
+                        area: "ee",
+                    },
+                    A6_1910: {
+                        code: "6.1910",
+                        label: "Computation Structures",
+                        area: "ee",
+                    },
+                    A6_2000: {
+                        code: "6.2000",
+                        label: "Electrical Circuits: Modeling and Design of Physical Systems",
+                        area: "ee",
+                    },
+                    A18_05: {
+                        code: "18.05",
+                        label: "Introduction to Probability and Statistics",
+                        area: "math",
+                    },
+                    A18_06: {
+                        code: "18.06",
+                        label: "Linear Algebra",
+                        area: "math",
+                    },
+                    A6_3100: {
+                        code: "6.3100",
+                        label: "Dynamical System Modeling and Control Design",
+                        area: "ee",
+                    },
+                    A6_9000: {
+                        code: "6.9000",
+                        label: "Engineering for Impact",
+                        area: "impact",
+                    },
+                };
+
+                const tiers = [
+                  ["A6_100A"],
+                    ["A8_01", "A18_01", "A6_3000", "A6_1904"],
+                    ["A6_1200", "A8_02", "A18_02"],
+                    ["A6_1210", "A6_1910", "A6_2000", "A18_05", "A18_06"],
+                    ["A6_3100", "A6_9000"],
+                ];
+
+                const edges = [
+                    ["A8_01", "A6_1200"],
+                    ["A6_100A", "A6_1210"],
+                    ["A6_1200", "A6_1210"],
+                    ["A6_100A", "A6_1904"],
+                    ["A8_02", "A6_1910"],
+                    ["A6_100A", "A6_1910"],
+                    ["A6_1904", "A6_1910"],
+                    ["A8_02", "A6_2000"],
+                    ["A8_01", "A6_3100"],
+                    ["A18_06", "A6_3100"],
+                    ["A8_01", "A8_02"],
+                    ["A18_01", "A18_02"],
+                    ["A18_02", "A18_05"],
+                    ["A18_02", "A18_06"],
+                    ["A6_1910", "A6_9000"],
+                    ["A6_2000", "A6_9000"],
+                    ["A6_3000", "A6_9000"],
+                    ["A6_100A", "A6_3000"],
+                ];
+
+                // --- Elements -------------------------------------------------------
+                const grid = document.getElementById("grid");
+                const svg = document.getElementById("edges");
+                const searchInput = document.getElementById("search");
+                const resetBtn = document.getElementById("reset");
+                const stage = document.getElementById("stage");
+                const testBadge = document.getElementById("testBadge");
+
+                // --- State ----------------------------------------------------------
+                const positions = {}; // id -> {cx,cy}
+                let isolatedSet = null; // Set<string>|null
+                let currentSearch = "";
+                const nodeMatches = {}; // id -> boolean
+
+                // Build quick parent map (to -> [from...])
+                const parents = new Map();
+                edges.forEach(([from, to]) => {
+                    if (!parents.has(to)) parents.set(to, []);
+                    parents.get(to).push(from);
+                });
+
+                function areaClass(area) {
+                    return area === "math"
+                        ? "math"
+                        : area === "phys"
+                        ? "phys"
+                        : area === "impact"
+                        ? "impact"
+                        : "ee";
+                }
+                function cssVar(name) {
+                    return getComputedStyle(document.documentElement)
+                        .getPropertyValue(name)
+                        .trim();
+                }
+                function strokeFor(area) {
+                    return area === "math"
+                        ? cssVar("--math")
+                        : area === "phys"
+                        ? cssVar("--phys")
+                        : area === "impact"
+                        ? cssVar("--impact")
+                        : cssVar("--ee");
+                }
+
+                function makeNodeEl(id) {
+                    const d = nodes[id];
+                    const el = document.createElement("div");
+                    el.className = `node ${areaClass(d.area)}`;
+                    el.id = id;
+                    el.tabIndex = 0;
+                    el.setAttribute("role", "button");
+                    el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
+                    el.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        toggleIsolation(id);
+                    });
+                    el.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            toggleIsolation(id);
+                        }
+                    });
+                    return el;
+                }
+
+                function layout() {
+                  grid.innerHTML = "";
+                  tiers.forEach((col, i) => {
+                    const tier = document.createElement("div");
+                    tier.className = "tier";
+                    tier.dataset.title = i === 0 ? "ASEd" : `Tier ${i}`;
+                    grid.appendChild(tier);
+                    col.forEach((id) => tier.appendChild(makeNodeEl(id)));
+                  });
+                  requestAnimationFrame(positionAll);
+                }
+
+                function positionAll() {
+                    const gridRect = grid.getBoundingClientRect();
+                    svg.setAttribute(
+                        "viewBox",
+                        `0 0 ${gridRect.width} ${gridRect.height}`
+                    );
+                    svg.setAttribute("width", gridRect.width);
+                    svg.setAttribute("height", gridRect.height);
+                    const base = grid.getBoundingClientRect();
+                    document.querySelectorAll(".node").forEach((el) => {
+                        const b = el.getBoundingClientRect();
+                        positions[el.id] = {
+                            cx: b.left - base.left + b.width / 2,
+                            cy: b.top - base.top + b.height / 2,
+                        };
+                    });
+                    drawEdges();
+                }
+
+                function shouldDimEdge(from, to) {
+                    if (currentSearch) {
+                        // Hide all edges when searching unless both nodes match
+                        return !(nodeMatches[from] && nodeMatches[to]);
+                    }
+                    const inIso =
+                        !isolatedSet ||
+                        (isolatedSet.has(from) && isolatedSet.has(to));
+                    const searchOk =
+                        !currentSearch || nodeMatches[from] || nodeMatches[to];
+                    return !(inIso && searchOk); // dim if either filter excludes it
+                }
+
+                function drawEdges() {
+                    svg.innerHTML = "";
+                    const defs = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "defs"
+                    );
+                    for (const a of ["ee", "math", "phys", "impact"]) {
+                        const m = document.createElementNS(
+                            "http://www.w3.org/2000/svg",
+                            "marker"
+                        );
+                        m.setAttribute("id", `arrow-${a}`);
+                        m.setAttribute("viewBox", "0 0 10 10");
+                        m.setAttribute("refX", "9");
+                        m.setAttribute("refY", "5");
+                        m.setAttribute("markerWidth", "6");
+                        m.setAttribute("markerHeight", "6");
+                        m.setAttribute("orient", "auto-start-reverse");
+                        // Use polygon (not path) so test counts only edge paths
+                        const poly = document.createElementNS(
+                            "http://www.w3.org/2000/svg",
+                            "polygon"
+                        );
+                        poly.setAttribute("points", "0,0 10,5 0,10");
+                        poly.setAttribute(
+                            "fill",
+                            a === "math"
+                                ? cssVar("--math")
+                                : a === "phys"
+                                ? cssVar("--phys")
+                                : a === "impact"
+                                ? cssVar("--impact")
+                                : cssVar("--ee")
+                        );
+                        m.appendChild(poly);
+                        defs.appendChild(m);
+                    }
+                    svg.appendChild(defs);
+
+                    edges.forEach(([from, to]) => {
+                        const a = positions[from],
+                            b = positions[to];
+                        if (!a || !b) return;
+                        const dx = b.cx - a.cx,
+                            dy = b.cy - a.cy,
+                            cx = a.cx + dx * 0.5,
+                            cy = a.cy + dy * 0.5 - 18;
+                        const path = document.createElementNS(
+                            "http://www.w3.org/2000/svg",
+                            "path"
+                        );
+                        path.setAttribute(
+                            "d",
+                            `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
+                        );
+                        const cls = areaClass(nodes[from].area);
+                        path.setAttribute("fill", "none");
+                        path.setAttribute(
+                            "stroke",
+                            strokeFor(nodes[from].area)
+                        );
+                        path.setAttribute("stroke-width", "2");
+                        path.setAttribute("marker-end", `url(#arrow-${cls})`);
+                        if (shouldDimEdge(from, to))
+                            path.classList.add("dimmed");
+                        svg.appendChild(path);
+                    });
+                }
+
+                function getAncestors(start) {
+                    const seen = new Set([start]);
+                    const stack = [start];
+                    while (stack.length) {
+                        const cur = stack.pop();
+                        const ps = parents.get(cur) || [];
+                        for (const p of ps) {
+                            if (!seen.has(p)) {
+                                seen.add(p);
+                                stack.push(p);
+                            }
+                        }
+                    }
+                    return seen;
+                }
+
+                function applyVisibility() {
+                    currentSearch = (searchInput?.value || "")
+                        .trim()
+                        .toLowerCase();
+                    // compute matches
+                    Object.keys(nodes).forEach((id) => {
+                        const d = nodes[id];
+                        nodeMatches[id] =
+                            !currentSearch ||
+                            `${d.code} ${d.label}`
+                                .toLowerCase()
+                                .includes(currentSearch);
+                    });
+                    // dim nodes
+                    document.querySelectorAll(".node").forEach((el) => {
+                        const id = el.id;
+                        const dimByIso = !!isolatedSet && !isolatedSet.has(id);
+                        const dimBySearch = !!currentSearch && !nodeMatches[id];
+                        el.classList.toggle("dimmed", dimByIso || dimBySearch);
+                    });
+                    drawEdges();
+                }
+
+                function toggleIsolation(id) {
+                    const next = getAncestors(id);
+                    const same =
+                        isolatedSet &&
+                        next.size === isolatedSet.size &&
+                        [...next].every((x) => isolatedSet.has(x));
+                    isolatedSet = same ? null : next;
+                    applyVisibility();
+                }
+
+                function clearAll() {
+                    isolatedSet = null;
+                    if (searchInput) searchInput.value = "";
+                    applyVisibility();
+                }
+
+                // --- Init -----------------------------------------------------------
+                layout();
+                new ResizeObserver(() => positionAll()).observe(grid);
+                window.addEventListener("resize", positionAll);
+
+                if (searchInput)
+                    searchInput.addEventListener("input", applyVisibility);
+                if (resetBtn) resetBtn.addEventListener("click", clearAll);
+                window.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") clearAll();
+                });
+
+                // Panning, but NOT when clicking on interactive controls
+                let isPanning = false,
+                    sx = 0,
+                    sy = 0,
+                    sl = 0,
+                    st = 0;
+                stage.addEventListener("pointerdown", (e) => {
+                    if (e.button !== 0 && e.button !== 1) return;
+                    if (e.target.closest(".node, input, button")) return; // don't start panning when interacting
+                    isPanning = true;
+                    sx = e.clientX;
+                    sy = e.clientY;
+                    sl = stage.scrollLeft;
+                    st = stage.scrollTop;
+                    stage.style.cursor = "grabbing";
+                    stage.setPointerCapture(e.pointerId);
+                });
+                stage.addEventListener("pointermove", (e) => {
+                    if (!isPanning) return;
+                    stage.scrollLeft = sl - (e.clientX - sx);
+                    stage.scrollTop = st - (e.clientY - sy);
+                });
+                stage.addEventListener("pointerup", () => {
+                    isPanning = false;
+                    stage.style.cursor = "default";
+                });
+
+                // --- Tests (smoke) --------------------------------------------------
+                function assert(cond, msg) {
+                    if (!cond) throw new Error(msg);
+                }
+                function runTests() {
+                    try {
+                        assert(!!searchInput, "#search exists");
+                        assert(!!grid && !!svg, "#grid and #edges exist");
+                        // nodes render
+                        const countNodes = Object.keys(nodes).length;
+                        const rendered =
+                            document.querySelectorAll(".node").length;
+                        assert(
+                            rendered === countNodes,
+                            `rendered ${rendered} nodes (expected ${countNodes})`
+                        );
+                        // edges draw (count only <path> edges; markers are <polygon>)
+                        positionAll();
+                        const pathCount = svg.querySelectorAll("path").length;
+                        assert(
+                            pathCount === edges.length,
+                            `rendered ${pathCount} edges (expected ${edges.length})`
+                        );
+                        // extra tests: ensure markers exist and are polygons, not paths
+                        const markerCount =
+                            svg.querySelectorAll("defs marker").length;
+                        const markerPolys =
+                            svg.querySelectorAll("defs polygon").length;
+                        const markerPaths =
+                            svg.querySelectorAll("defs path").length;
+                        assert(
+                            markerCount === 4,
+                            `expected 4 markers, found ${markerCount}`
+                        );
+                        assert(
+                            markerPolys === 4,
+                            `expected 4 polygon arrowheads, found ${markerPolys}`
+                        );
+                        assert(
+                            markerPaths === 0,
+                            "marker should not contain path elements"
+                        );
+                        // clear
+                        clearAll();
+                        testBadge.textContent = "Tests passed";
+                        testBadge.style.color = "#a7f3d0";
+                    } catch (e) {
+                        testBadge.textContent = "Tests failed: " + e.message;
+                        testBadge.style.color = "#fecaca";
+                        console.error(e);
+                    }
+                }
+                // Run after first paint
+                setTimeout(runTests, 50);
+            })();
+        </script>
+    </body>
+</html>
