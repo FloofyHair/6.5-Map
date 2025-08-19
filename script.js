@@ -1,4 +1,38 @@
 (function () {
+    // Tag icons via CSS mask + color variable
+    function cssVarForTag(tag) {
+        const slug = String(tag)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+        return `var(--tag-${slug}, var(--muted))`;
+    }
+    function urlForTagSvg(tag) {
+        const slug = String(tag)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+        console.log(slug);
+        return `url('icons/${slug}.svg')`;
+    }
+    function renderTagIcons(tags) {
+        const row = document.createElement("div");
+        row.className = "tags";
+        (tags || []).forEach((tag) => {
+            const el = document.createElement("span");
+            el.className = "tag-icon";
+            el.style.setProperty("--tag-color", cssVarForTag(tag));
+            el.style.setProperty("--tag-icon-url", urlForTagSvg(tag));
+            el.title = String(tag);
+            row.appendChild(el);
+        });
+        return row;
+    }
+
+    // --- Tag SVG helpers -------------------------------------------------
+
     // --- Data ------------------------------------------------------------
     const nodes = {
         A6_100A: {
@@ -111,15 +145,15 @@
                 "Fundamentals of linear systems, and abstraction modeling of multi-physics lumped and distributed systems using lumped electrical circuits. Linear networks involving independent and dependent sources, resistors, capacitors, and inductors. Extensions to include operational amplifiers and transducers. Dynamics of first- and second-order networks; analysis and design in the time and frequency domains; signal and energy processing applications. Design exercises. Weekly laboratory with microcontroller and transducers.",
             why: "Required as part of the four system design subjects.",
         },
-        A6_3700: {
-            code: "6.3700",
-            label: "Introduction to Probability",
-            title: "Introduction to Probability",
+        A6_3800: {
+            code: "6.3800",
+            label: "Introduction to Inference",
+            title: "Introduction to Inference",
             area: "math",
             color: "var(--math)",
             description:
-                "An introduction to probability theory, the modeling and analysis of probabilistic systems, and elements of statistical inference. Probabilistic models, conditional probability. Discrete and continuous random variables. Expectation and conditional expectation, and further topics about random variables. Limit Theorems. Bayesian estimation and hypothesis testing. Elements of classical statistical inference. Bernoulli and Poisson processes. Markov chains. Students taking graduate version complete additional assignments.",
-            why: "Required as part of the two math subjects. Could be 18.05 instead but that class is bad. Could also be 6.3800 instead",
+                "Introduces probabilistic modeling for problems of inference and machine learning from data, emphasizing analytical and computational aspects. Distributions, marginalization, conditioning, and structure, including graphical and neural network representations. Belief propagation, decision-making, classification, estimation, and prediction. Sampling methods and analysis. Introduces asymptotic analysis and information measures. Computational laboratory component explores the concepts introduced in class in the context of contemporary applications. Students design inference algorithms, investigate their behavior on real data, and discuss experimental results.",
+            why: "Required as part of the two math subjects. Could be 18.05 instead but that class is bad. Could also be 6.3700 but 6.3800 fulfills the lab requirement.",
         },
         A18_06: {
             code: "18.06",
@@ -188,7 +222,7 @@
                 "A6_1210",
                 "A6_1910",
                 "A6_2000",
-                "A6_3700",
+                "A6_3800",
                 "A18_06",
                 "A6_3000",
             ],
@@ -210,12 +244,32 @@
         { title: "Electives", courses: [] },
     ];
     const girCommunication = [
-        { title: "CI-H", courses: ["A24_00"] },
-        { title: "CI-M", courses: [] },
+        {
+            title: "CI-H",
+            courses: ["A24_00"],
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-hhw-subjects/listing",
+        },
+        {
+            title: "CI-M",
+            courses: [],
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
+        },
     ];
-    const girLab = [{ title: "Lab", courses: [] }];
+    const girLab = [
+        {
+            title: "Lab",
+            courses: ["A6_3800", "A6_3100", "A6_9000"],
+            link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#laboratoryrequirementtext",
+        },
+    ];
     const girPE = [{ title: "PE", courses: ["Crew"] }];
-    const girRest = [{ title: "REST", courses: [] }];
+    const girRest = [
+        {
+            title: "REST",
+            courses: ["A6_1910", "A6_2000"],
+            link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#restrequirementtext",
+        },
+    ];
 
     const edges = [
         ["A8_01", "A6_1200"],
@@ -230,7 +284,7 @@
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
         ["A18_01", "A18_02"],
-        ["A18_02", "A6_3700"],
+        ["A18_02", "A6_3800"],
         ["A18_02", "A18_06"],
         ["A6_1910", "A6_9000"],
         ["A6_2000", "A6_9000"],
@@ -239,6 +293,26 @@
     ];
 
     // --- Elements -------------------------------------------------------
+    async function mergeTagsFromJson() {
+        try {
+            const resp = await fetch("classes.json");
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const map = data.nodes || data;
+            Object.keys(map || {}).forEach((id) => {
+                if (!nodes[id]) return;
+                if (
+                    map[id].tags &&
+                    (!nodes[id].tags || nodes[id].tags.length === 0)
+                ) {
+                    nodes[id].tags = map[id].tags;
+                }
+            });
+        } catch (e) {
+            console.warn("Could not merge tags from classes.json", e);
+        }
+    }
+
     const grid = document.getElementById("grid");
     const svg = document.getElementById("edges");
     const searchInput = document.getElementById("search");
@@ -253,6 +327,7 @@
     const infoWhy = document.getElementById("infoWhy");
     const infoArea = document.getElementById("infoArea");
     const infoSwatch = document.getElementById("infoSwatch");
+    const infoTags = document.getElementById("infoTags");
 
     // --- State ----------------------------------------------------------
     const positions = {}; // id -> {cx,cy}
@@ -304,7 +379,22 @@
             el.tabIndex = 0;
             el.setAttribute("role", "button");
             el.setAttribute("aria-label", `${d.code}: ${d.title || d.label}`);
-            el.innerHTML = `<span class="code">${d.code}</span><div class="label">${d.label}</div>`;
+
+            // Build header row: code + tags side-by-side
+            const head = document.createElement("div");
+            head.className = "head";
+            const codeEl = document.createElement("span");
+            codeEl.className = "code";
+            codeEl.textContent = d.code;
+            head.appendChild(codeEl);
+            head.appendChild(renderTagIcons(d.tags));
+            el.appendChild(head);
+
+            // Label underneath
+            const labelEl = document.createElement("div");
+            labelEl.className = "label";
+            labelEl.textContent = d.label;
+            el.appendChild(labelEl);
 
             el.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -343,6 +433,16 @@
         return el;
     }
 
+    function updateRenderedTags() {
+        document.querySelectorAll(".node").forEach((el) => {
+            const id = el.id;
+            if (!id || !nodes[id]) return;
+            const old = el.querySelector(".tags");
+            if (old) old.remove();
+            const container = el.querySelector(".head") || el;
+            container.appendChild(renderTagIcons(nodes[id].tags || []));
+        });
+    }
     function layout(gridEl, tierData) {
         gridEl.innerHTML = "";
         gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
@@ -350,6 +450,22 @@
             const tier = document.createElement("div");
             tier.className = "tier";
             tier.dataset.title = col.title;
+
+            // Add tier title with optional link
+            const titleEl = document.createElement("div");
+            titleEl.className = "tier-title";
+            if (col.link) {
+                const link = document.createElement("a");
+                link.href = col.link;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = col.title;
+                titleEl.appendChild(link);
+            } else {
+                titleEl.textContent = col.title;
+            }
+            tier.appendChild(titleEl);
+
             // Always render the tier, even if empty
             if (col.courses && col.courses.length > 0) {
                 col.courses.forEach((id) => tier.appendChild(makeNodeEl(id)));
@@ -550,6 +666,10 @@
         infoCode.textContent = d.code;
         infoArea.textContent = d.area.toUpperCase();
         infoDesc.textContent = d.description || "—";
+        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
+        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
+        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
+        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
         infoWhy.textContent = d.why || "—";
         const color = d.color || strokeFor(d.area);
         infoSwatch.style.background = color;
@@ -561,6 +681,26 @@
 
     // --- Init -----------------------------------------------------------
     layout(grid, mrTiers);
+    /* merge from classes.json */
+    fetch("classes.json", { cache: "no-store" })
+        .then((r) =>
+            r.ok
+                ? r.json()
+                : Promise.reject(new Error("classes.json not found"))
+        )
+        .then((data) => {
+            const ext = (data && data.nodes) || {};
+            for (const id in ext) {
+                if (!nodes[id]) nodes[id] = {};
+                // Merge external node fields onto existing ones
+                Object.assign(nodes[id], ext[id]);
+            }
+            // Update rendered tag rows now that tags are available
+            updateRenderedTags();
+        })
+        .catch((err) => {
+            console.warn("Could not merge classes.json:", err);
+        });
     layout(document.getElementById("gir-science"), girScience);
     layout(document.getElementById("gir-hass"), girHass);
     layout(document.getElementById("gir-communication"), girCommunication);
