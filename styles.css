@@ -7,7 +7,8 @@
     --ee: #6fa8dc;
     --math: #84d68a;
     --phys: #f4c56a;
-    --impact: #ffa6d6;
+    --chem: #42d2df;
+    --other: #ffa6d6;
     --edge: #7bb0ff;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -113,8 +114,11 @@ input[type="search"] {
 .dot.phys {
     background: var(--phys);
 }
-.dot.impact {
-    background: var(--impact);
+.dot.chem {
+    background: var(--chem);
+}
+.dot.other {
+    background: var(--other);
 }
 
 .stage-wrap {
@@ -272,8 +276,11 @@ svg.edges {
 .node.phys {
     border-color: var(--phys);
 }
-.node.impact {
-    border-color: var(--impact);
+.node.chem {
+    border-color: var(--chem);
+}
+.node.other {
+    border-color: var(--other);
 }
 .node.gir-node {
     border-color: var(--muted);
@@ -350,23 +357,41 @@ svg.edges path.dimmed {
 }
 .info .row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
+    margin-bottom: 12px;
 }
 .info .swatch {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.info .title-area {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.info .title-section {
+    flex: 1;
 }
 .info h2 {
     font-size: 16px;
     margin: 0 0 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
 }
 .info h2 a {
     color: inherit;
     text-decoration: none;
     transition: color 0.2s ease;
+    flex: 1;
 }
 .info h2 a:hover {
     color: var(--accent);
@@ -376,13 +401,28 @@ svg.edges path.dimmed {
     font-size: 12px;
 }
 .info .area {
-    margin-left: auto;
     font-size: 11px;
     padding: 4px 8px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: #0c1230;
     color: var(--muted);
+    flex-shrink: 0;
+}
+.info .close {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 8px;
+    padding: 4px;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+.info .close:hover {
+    color: #fff;
 }
 .info section {
     margin-top: 12px;
@@ -394,26 +434,10 @@ svg.edges path.dimmed {
     letter-spacing: 0.4px;
     color: var(--muted);
 }
-.info p {
+.info section p {
     margin: 0;
     font-size: 13px;
     color: #e4ecff;
-}
-.info .close {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 18px;
-    line-height: 1;
-    border-radius: 8px;
-    padding: 4px;
-}
-.info .close:hover {
-    color: #fff;
 }
 
 @media (max-width: 1200px) {
@@ -482,12 +506,18 @@ svg.edges path.dimmed {
     --tag-joint: #872be9;
     --tag-hass-humanities: #51ba48;
     --tag-communication-intensive-hass: #dad421;
+    --tag-calculus-i: var(--math);
+    --tag-calculus-ii: var(--math);
+    --tag-physics-i: var(--phys);
+    --tag-physics-ii: var(--phys);
+    --tag-chemistry: var(--chem);
 }
 
 /* Head row (code + tags inline) */
 .node .head {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     margin-bottom: 6px;
 }
@@ -497,6 +527,7 @@ svg.edges path.dimmed {
 }
 .node .head .tags {
     margin: 0;
+    margin-left: auto;
 }
 .tag-icon {
     width: 16px;

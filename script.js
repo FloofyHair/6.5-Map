@@ -14,9 +14,10 @@
             .trim()
             .replace(/\s+/g, "-")
             .replace(/[^a-z0-9-]/g, "");
-        console.log(slug);
+        // console.log(slug);
         return `url('icons/${slug}.svg')`;
     }
+
     function renderTagIcons(tags) {
         const row = document.createElement("div");
         row.className = "tags";
@@ -24,197 +25,38 @@
             const el = document.createElement("span");
             el.className = "tag-icon";
             el.style.setProperty("--tag-color", cssVarForTag(tag));
-            el.style.setProperty("--tag-icon-url", urlForTagSvg(tag));
+
+            // Try to load the specific icon, fallback to default if it fails
+            const iconUrl = urlForTagSvg(tag);
+            el.style.setProperty("--tag-icon-url", iconUrl);
+
+            // Add error handling for missing icons
+            const img = new Image();
+            img.onerror = () => {
+                el.style.setProperty(
+                    "--tag-icon-url",
+                    "url('icons/default.svg')"
+                );
+            };
+            img.src = iconUrl.replace("url('", "").replace("')", "");
+
             el.title = String(tag);
             row.appendChild(el);
         });
         return row;
     }
 
-    // --- Tag SVG helpers -------------------------------------------------
-
     // --- Data ------------------------------------------------------------
-    const nodes = {
-        A6_100A: {
-            code: "6.100A",
-            label: "Introduction to Computer Science Programming in Python",
-            title: "Introduction to CS Programming in Python",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Introduction to computer science and programming. Students develop skills to program and use computational techniques to solve problems. Topics include: the notion of computation, Python, simple algorithms and data structures, object-oriented programming, testing and debugging, and algorithmic complexity. Lectures are viewed outside of class; in-class time is dedicated to problem-solving and discussion. Combination of 6.100A and 6.100B (or 16.C20) counts as REST subject.",
-            why: "Required as part of the four fundamental subjects. Already ASEd.",
-        },
-        A8_01: {
-            code: "8.01",
-            label: "Physics I",
-            title: "Physics I",
-            area: "phys",
-            color: "var(--phys)",
-            description:
-                "Introduces classical mechanics. Space and time: straight-line kinematics; motion in a plane; forces and static equilibrium; particle dynamics, with force and conservation of momentum; relative inertial frames and non-inertial force; work, potential energy and conservation of energy; kinetic theory and the ideal gas; rigid bodies and rotational dynamics; vibrational motion; conservation of angular momentum; central force motions; fluid mechanics. Subject taught using the TEAL (Technology-Enabled Active Learning) format which features students working in groups of three, discussing concepts, solving problems, and doing table-top experiments with the aid of computer data acquisition and analysis.",
-            why: "Prerequisite for other classes.",
-        },
-        A18_01: {
-            code: "18.01",
-            label: "Calculus I",
-            title: "Calculus I",
-            area: "math",
-            color: "var(--math)",
-            description:
-                "Differentiation and integration of functions of one variable, with applications. Informal treatment of limits and continuity. Differentiation: definition, rules, application to graphing, rates, approximations, and extremum problems. Indefinite integration; separable first-order differential equations. Definite integral; fundamental theorem of calculus. Applications of integration to geometry and science. Elementary functions. Techniques of integration. Polar coordinates. L'Hopital's rule. Improper integrals. Infinite series: geometric, p-harmonic, simple comparison tests, power series for some elementary functions.",
-            why: "Prerequisite for other classes.",
-        },
-        A6_1904: {
-            code: "6.1904",
-            label: "Introduction to Low-level Programming in C and Assembly",
-            title: "Intro to Low-level Programming",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Introduction to C and assembly language for students coming from a Python background (6.100A). Studies the C language, focusing on memory and associated topics including pointers, how different data structures are stored in memory, the stack, and the heap in order to build a strong understanding of the constraints involved in manipulating complex data structures in modern computational systems. Studies assembly language to facilitate a firm understanding of how high-level languages are translated to machine-level instructions.",
-            why: "Required as part of the four fundamental subjects. Could be 6.1903 instead.",
-        },
-        A6_3000: {
-            code: "6.3000",
-            label: "Signal Processing",
-            title: "Signal Processing",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Fundamentals of signal processing, focusing on the use of Fourier methods to analyze and process signals such as sounds and images. Topics include Fourier series, Fourier transforms, the Discrete Fourier Transform, sampling, convolution, deconvolution, filtering, noise reduction, and compression. Applications draw broadly from areas of contemporary interest with emphasis on both analysis and design.",
-            why: "Prerequisite for 6.9000.",
-        },
-        A6_1200: {
-            code: "6.1200",
-            label: "Mathematics for Computer Science",
-            title: "Mathematics for Computer Science",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Elementary discrete mathematics for science and engineering, with a focus on mathematical tools and proof techniques useful in computer science. Topics include logical notation, sets, relations, elementary graph theory, state machines and invariants, induction and proofs by contradiction, recurrences, asymptotic notation, elementary analysis of algorithms, elementary number theory and cryptography, permutations and combinations, counting tools, and discrete probability.",
-            why: "Required as part of the four fundamental subjects. Could be 6.120A instead but 6.1200 includes probability which fills prereqs for 6.1210.",
-        },
-        A8_02: {
-            code: "8.02",
-            label: "Physics II",
-            title: "Physics II",
-            area: "phys",
-            color: "var(--phys)",
-            description:
-                "Introduction to electromagnetism and electrostatics: electric charge, Coulomb's law, electric structure of matter; conductors and dielectrics. Concepts of electrostatic field and potential, electrostatic energy. Electric currents, magnetic fields and Ampere's law. Magnetic materials. Time-varying fields and Faraday's law of induction. Basic electric circuits. Electromagnetic waves and Maxwell's equations. Subject taught using the TEAL (Technology Enabled Active Learning) studio format which utilizes small group interaction and current technology to help students develop intuition about, and conceptual models of, physical phenomena.",
-            why: "Prerequisite for other classes.",
-        },
-        A18_02: {
-            code: "18.02",
-            label: "Calculus II",
-            title: "Calculus II",
-            area: "math",
-            color: "var(--math)",
-            description:
-                "Calculus of several variables. Vector algebra in 3-space, determinants, matrices. Vector-valued functions of one variable, space motion. Scalar functions of several variables: partial differentiation, gradient, optimization techniques. Double integrals and line integrals in the plane; exact differentials and conservative fields; Green's theorem and applications, triple integrals, line and surface integrals in space, Divergence theorem, Stokes' theorem; applications.",
-            why: "Prerequisite for other classes.",
-        },
-        A6_1210: {
-            code: "6.1210",
-            label: "Introduction to Algorithms",
-            title: "Introduction to Algorithms",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Introduction to mathematical modeling of computational problems, as well as common algorithms, algorithmic paradigms, and data structures used to solve these problems. Emphasizes the relationship between algorithms and programming, and introduces basic performance measures and analysis techniques for these problems. Enrollment may be limited.",
-            why: "Required as part of the four fundamental subjects.",
-        },
-        A6_1910: {
-            code: "6.1910",
-            label: "Computation Structures",
-            title: "Computation Structures",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Provides an introduction to the design of digital systems and computer architecture. Emphasizes expressing all hardware designs in a high-level hardware description language and synthesizing the designs. Topics include combinational and sequential circuits, instruction set abstraction for programmable hardware, single-cycle and pipelined processor implementations, multi-level memory hierarchies, virtual memory, exceptions and I/O, and parallel systems.",
-            why: "Required as part of the four system design subjects.",
-        },
-        A6_2000: {
-            code: "6.2000",
-            label: "Electrical Circuits: Modeling and Design of Physical Systems",
-            title: "Electrical Circuits",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "Fundamentals of linear systems, and abstraction modeling of multi-physics lumped and distributed systems using lumped electrical circuits. Linear networks involving independent and dependent sources, resistors, capacitors, and inductors. Extensions to include operational amplifiers and transducers. Dynamics of first- and second-order networks; analysis and design in the time and frequency domains; signal and energy processing applications. Design exercises. Weekly laboratory with microcontroller and transducers.",
-            why: "Required as part of the four system design subjects.",
-        },
-        A6_3800: {
-            code: "6.3800",
-            label: "Introduction to Inference",
-            title: "Introduction to Inference",
-            area: "math",
-            color: "var(--math)",
-            description:
-                "Introduces probabilistic modeling for problems of inference and machine learning from data, emphasizing analytical and computational aspects. Distributions, marginalization, conditioning, and structure, including graphical and neural network representations. Belief propagation, decision-making, classification, estimation, and prediction. Sampling methods and analysis. Introduces asymptotic analysis and information measures. Computational laboratory component explores the concepts introduced in class in the context of contemporary applications. Students design inference algorithms, investigate their behavior on real data, and discuss experimental results.",
-            why: "Required as part of the two math subjects. Could be 18.05 instead but that class is bad. Could also be 6.3700 but 6.3800 fulfills the lab requirement.",
-        },
-        A18_06: {
-            code: "18.06",
-            label: "Linear Algebra",
-            title: "Linear Algebra",
-            area: "math",
-            color: "var(--math)",
-            description:
-                "Basic subject on matrix theory and linear algebra, emphasizing topics useful in other disciplines, including systems of equations, vector spaces, determinants, eigenvalues, singular value decomposition, and positive definite matrices. Applications to least-squares approximations, stability of differential equations, networks, Fourier transforms, and Markov processes. Uses linear algebra software. Compared with 18.700, more emphasis on matrix algorithms and many applications.",
-            why: "Required as part of the two math subjects. Could also be 18.C06 instead",
-        },
-        A6_3100: {
-            code: "6.3100",
-            label: "Dynamical System Modeling and Control Design",
-            title: "Control Design",
-            area: "ee",
-            color: "var(--ee)",
-            description:
-                "A learn-by-design introduction to modeling and control of discrete- and continuous-time systems, from intuition-building analytical techniques to more computational and data-centric strategies. Topics include: linear difference/differential equations (natural frequencies, transfer functions); controller metrics (stability, tracking, disturbance rejection); analytical techniques (PID, root-loci, lead-lag, phase margin); computational strategies (state-space, eigen-placement, LQR); and data-centric approaches (state estimation, regression, and identification). Concepts are introduced with lectures and online problems, and then mastered during weekly labs. In lab, students model, design, test, and explain systems and controllers involving sensors, actuators, and a microcontroller (e.g., optimizing thrust-driven positioners or stabilizing magnetic levitators). Students taking graduate version complete additional problems and labs.",
-            why: "Required as part of the four system design subjects.",
-        },
-        A6_9000: {
-            code: "6.9000",
-            label: "Engineering for Impact",
-            title: "Engineering for Impact",
-            area: "impact",
-            color: "var(--impact)",
-            description:
-                "Students work in teams to engineer hardware/software systems that solve important, challenging real-world problems. In pursuit of these projects, students engage at every step of the full-stack development process, from printed circuit board design to firmware to server to industrial design. Teams design and build functional prototypes of complete hardware/software systems. Grading is based on individual- and team-based elements. Satisfies 10 units of Institute Laboratory credit. Enrollment may be limited due to staffing and space requirements.",
-            why: "Required as part of the four system design subjects.",
-        },
-        A24_00: {
-            code: "24.00",
-            label: "Problems of Philosophy",
-            title: "Problems of Philosophy",
-            area: "impact",
-            color: "var(--impact)",
-            description:
-                "Introduction to the problems of philosophy- in particular, to problems in ethics, metaphysics, theory of knowledge, and philosophy of logic, language, and science. A systematic rather than historical approach. Readings from classical and contemporary sources, but emphasis is on examination and evaluation of proposed solutions to the problems.",
-            why: "Required as part of the HASS Distribution requirement.",
-        },
-        Crew: {
-            code: "Crew",
-            label: "Men's Lightweight Crew",
-            title: "Men's Lightweight Crew",
-            area: "impact",
-            color: "var(--impact)",
-            description: "Best rowing team in the world.",
-            why: "Required as part of the PE requirement.",
-        },
-    };
+    const nodes = {};
 
     const mrTiers = [
-        { title: "ASE", courses: ["A6_100A"] },
         {
             title: "Tier 1",
-            courses: ["A8_01", "A18_01", "A6_1904"],
+            courses: ["A8_01", "A18_01A", "A6_100A"],
         },
         {
             title: "Tier 2",
-            courses: ["A6_1200", "A8_02", "A18_02"],
+            courses: ["A6_1200", "A8_02", "A18_02", "A6_1904"],
         },
         {
             title: "Tier 3",
@@ -231,10 +73,26 @@
     ];
 
     const girScience = [
-        { title: "Biology", courses: [] },
-        { title: "Chemistry", courses: [] },
-        { title: "Physics", courses: ["A8_01", "A8_02"] },
-        { title: "Math", courses: ["A18_01", "A18_02"] },
+        {
+            title: "Biology",
+            courses: [],
+            link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
+        },
+        {
+            title: "Chemistry",
+            courses: ["A5_111"],
+            link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
+        },
+        {
+            title: "Physics",
+            courses: ["A8_01", "A8_02"],
+            link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
+        },
+        {
+            title: "Math",
+            courses: ["A18_01A", "A18_02"],
+            link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
+        },
     ];
     const girHass = [
         { title: "Humanities", courses: ["A24_00"] },
@@ -251,7 +109,7 @@
         },
         {
             title: "CI-M",
-            courses: [],
+            courses: ["A6_2220"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
         },
     ];
@@ -266,7 +124,7 @@
     const girRest = [
         {
             title: "REST",
-            courses: ["A6_1910", "A6_2000"],
+            courses: ["A6_1200", "A6_1910", "A6_2000", "A6_3000", "A18_06"],
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#restrequirementtext",
         },
     ];
@@ -283,7 +141,7 @@
         ["A8_01", "A6_3100"],
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
-        ["A18_01", "A18_02"],
+        ["A18_01A", "A18_02"],
         ["A18_02", "A6_3800"],
         ["A18_02", "A18_06"],
         ["A6_1910", "A6_9000"],
@@ -347,8 +205,10 @@
             ? "math"
             : area === "phys"
             ? "phys"
-            : area === "impact"
-            ? "impact"
+            : area === "chem"
+            ? "chem"
+            : area === "other"
+            ? "other"
             : "ee";
     }
     function cssVar(name) {
@@ -361,8 +221,10 @@
             ? cssVar("--math")
             : area === "phys"
             ? cssVar("--phys")
-            : area === "impact"
-            ? cssVar("--impact")
+            : area === "chem"
+            ? cssVar("--chem")
+            : area === "other"
+            ? cssVar("--other")
             : cssVar("--ee");
     }
 
@@ -387,7 +249,7 @@
             codeEl.className = "code";
             codeEl.textContent = d.code;
             head.appendChild(codeEl);
-            head.appendChild(renderTagIcons(d.tags));
+            head.appendChild(renderTagIcons(d.tags || []));
             el.appendChild(head);
 
             // Label underneath
@@ -509,36 +371,6 @@
                 "http://www.w3.org/2000/svg",
                 "defs"
             );
-            for (const a of ["ee", "math", "phys", "impact"]) {
-                const m = document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "marker"
-                );
-                m.setAttribute("id", `arrow-${a}`);
-                m.setAttribute("viewBox", "0 0 10 10");
-                m.setAttribute("refX", "9");
-                m.setAttribute("refY", "5");
-                m.setAttribute("markerWidth", "6");
-                m.setAttribute("markerHeight", "6");
-                m.setAttribute("orient", "auto-start-reverse");
-                const poly = document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "polygon"
-                );
-                poly.setAttribute("points", "0,0 10,5 0,10");
-                poly.setAttribute(
-                    "fill",
-                    a === "math"
-                        ? cssVar("--math")
-                        : a === "phys"
-                        ? cssVar("--phys")
-                        : a === "impact"
-                        ? cssVar("--impact")
-                        : cssVar("--ee")
-                );
-                m.appendChild(poly);
-                defs.appendChild(m);
-            }
             svg.appendChild(defs);
         }
 
@@ -583,9 +415,43 @@
                 "d",
                 `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
             );
-            const cls = areaClass(nodes[from].area);
-            path.setAttribute("stroke", strokeFor(nodes[from].area));
-            path.setAttribute("marker-end", `url(#arrow-${cls})`);
+
+            // Use dynamic colors from node data
+            const fromNode = nodes[from];
+            if (fromNode) {
+                // Use the node's color if available, otherwise fall back to area-based color
+                const strokeColor = fromNode.color || strokeFor(fromNode.area);
+                path.setAttribute("stroke", strokeColor);
+
+                // Create dynamic arrow marker for this specific color
+                const markerId = `arrow-${from}-${to}`;
+                let marker = defs.querySelector(`#${markerId}`);
+                if (!marker) {
+                    marker = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "marker"
+                    );
+                    marker.setAttribute("id", markerId);
+                    marker.setAttribute("viewBox", "0 0 10 10");
+                    marker.setAttribute("refX", "9");
+                    marker.setAttribute("refY", "5");
+                    marker.setAttribute("markerWidth", "6");
+                    marker.setAttribute("markerHeight", "6");
+                    marker.setAttribute("orient", "auto-start-reverse");
+
+                    const poly = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "polygon"
+                    );
+                    poly.setAttribute("points", "0,0 10,5 0,10");
+                    poly.setAttribute("fill", strokeColor);
+                    marker.appendChild(poly);
+                    defs.appendChild(marker);
+                }
+
+                path.setAttribute("marker-end", `url(#${markerId})`);
+            }
+
             if (shouldDimEdge(from, to)) path.classList.add("dimmed");
             else path.classList.remove("dimmed");
         });
@@ -662,9 +528,8 @@
 
         infoTitle.innerHTML = `<a href="${catalogUrl}" target="_blank" rel="noopener noreferrer">${
             d.title || d.label || d.code
-        }</a>`;
+        }</a><span class="area">${d.area.toUpperCase()}</span>`;
         infoCode.textContent = d.code;
-        infoArea.textContent = d.area.toUpperCase();
         infoDesc.textContent = d.description || "—";
         if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
         if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
@@ -680,7 +545,6 @@
     }
 
     // --- Init -----------------------------------------------------------
-    layout(grid, mrTiers);
     /* merge from classes.json */
     fetch("classes.json", { cache: "no-store" })
         .then((r) =>
@@ -695,40 +559,60 @@
                 // Merge external node fields onto existing ones
                 Object.assign(nodes[id], ext[id]);
             }
+            // Now that nodes are loaded, render the layouts
+            layout(grid, mrTiers);
+            layout(document.getElementById("gir-science"), girScience);
+            layout(document.getElementById("gir-hass"), girHass);
+            layout(
+                document.getElementById("gir-communication"),
+                girCommunication
+            );
+            layout(document.getElementById("gir-lab"), girLab);
+            layout(document.getElementById("gir-pe"), girPE);
+            layout(document.getElementById("gir-rest"), girRest);
+
             // Update rendered tag rows now that tags are available
             updateRenderedTags();
+
+            // Position everything after layout
+            requestAnimationFrame(positionAll);
+
+            // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
+            const girSection = document.querySelector(".section.gir");
+            const girRows = girSection
+                ? girSection.querySelectorAll(".section-row")
+                : null;
+            if (girRows && girRows[0]) {
+                const blocks = girRows[0].querySelectorAll(
+                    ".gir-block, .section-block"
+                );
+                if (blocks.length >= 2) {
+                    const scienceCount = girScience.length; // 4
+                    const hassCount = girHass.length; // 5
+                    const total = scienceCount + hassCount;
+                    const sciencePct = (scienceCount / total) * 100;
+                    const hassPct = (hassCount / total) * 100;
+                    // First block is Science Core in markup
+                    blocks[0].style.flex = `0 0 ${sciencePct}%`;
+                    blocks[1].style.flex = `0 0 ${hassPct}%`;
+                }
+            }
         })
         .catch((err) => {
             console.warn("Could not merge classes.json:", err);
+            // Fallback: render layouts even if JSON fails
+            layout(grid, mrTiers);
+            layout(document.getElementById("gir-science"), girScience);
+            layout(document.getElementById("gir-hass"), girHass);
+            layout(
+                document.getElementById("gir-communication"),
+                girCommunication
+            );
+            layout(document.getElementById("gir-lab"), girLab);
+            layout(document.getElementById("gir-pe"), girPE);
+            layout(document.getElementById("gir-rest"), girRest);
+            requestAnimationFrame(positionAll);
         });
-    layout(document.getElementById("gir-science"), girScience);
-    layout(document.getElementById("gir-hass"), girHass);
-    layout(document.getElementById("gir-communication"), girCommunication);
-    layout(document.getElementById("gir-lab"), girLab);
-    layout(document.getElementById("gir-pe"), girPE);
-    layout(document.getElementById("gir-rest"), girRest);
-
-    // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
-    const girSection = document.querySelector(".section.gir");
-    const girRows = girSection
-        ? girSection.querySelectorAll(".section-row")
-        : null;
-    if (girRows && girRows[0]) {
-        const blocks = girRows[0].querySelectorAll(
-            ".gir-block, .section-block"
-        );
-        if (blocks.length >= 2) {
-            const scienceCount = girScience.length; // 4
-            const hassCount = girHass.length; // 5
-            const total = scienceCount + hassCount;
-            const sciencePct = (scienceCount / total) * 100;
-            const hassPct = (hassCount / total) * 100;
-            // First block is Science Core in markup
-            blocks[0].style.flex = `0 0 ${sciencePct}%`;
-            blocks[1].style.flex = `0 0 ${hassPct}%`;
-        }
-    }
-    requestAnimationFrame(positionAll);
     new ResizeObserver(() => positionAll()).observe(grid);
 
     // Also observe GIR containers for responsive sizing
