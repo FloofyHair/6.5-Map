@@ -72,6 +72,18 @@
         { title: "Tier 4", courses: ["A6_3100", "A6_9000"] },
     ];
 
+    const planTiers = [
+        { title: "Semester 1", courses: [] },
+        { title: "Semester 2", courses: [] },
+        { title: "Semester 3", courses: [] },
+        { title: "Semester 4", courses: [] },
+        { title: "Semester 5", courses: [] },
+        { title: "Semester 6", courses: [] },
+        { title: "Semester 7", courses: [] },
+        { title: "Semester 8", courses: [] },
+        { title: "Credit", courses: [] },
+    ];
+
     const girScience = [
         {
             title: "Biology",
@@ -150,6 +162,8 @@
         ["A6_100A", "A6_3000"],
     ];
 
+    const planEdges = [];
+
     // --- Elements -------------------------------------------------------
     async function mergeTagsFromJson() {
         try {
@@ -173,6 +187,8 @@
 
     const grid = document.getElementById("grid");
     const svg = document.getElementById("edges");
+    const planGrid = document.getElementById("plan-grid");
+    const planSvg = document.getElementById("plan-edges");
     const searchInput = document.getElementById("search");
     const resetBtn = document.getElementById("reset");
     const stage = document.getElementById("stage");
@@ -189,6 +205,7 @@
 
     // --- State ----------------------------------------------------------
     const positions = {}; // id -> {cx,cy}
+    const planPositions = {}; // id -> {cx,cy}
     let isolatedSet = null; // Set<string>|null
     let currentSearch = "";
     const nodeMatches = {}; // id -> boolean
@@ -352,6 +369,26 @@
         drawEdges();
     }
 
+    function positionPlan() {
+        if (!planGrid || !planSvg) return;
+        const gridRect = planGrid.getBoundingClientRect();
+        planSvg.setAttribute(
+            "viewBox",
+            `0 0 ${gridRect.width} ${gridRect.height}`
+        );
+        planSvg.setAttribute("width", gridRect.width);
+        planSvg.setAttribute("height", gridRect.height);
+        const base = planGrid.getBoundingClientRect();
+        planGrid.querySelectorAll(".node").forEach((el) => {
+            const b = el.getBoundingClientRect();
+            planPositions[el.id] = {
+                cx: b.left - base.left + b.width / 2,
+                cy: b.top - base.top + b.height / 2,
+            };
+        });
+        drawPlanEdges();
+    }
+
     function shouldDimEdge(from, to) {
         if (currentSearch) {
             // Hide all edges when searching unless both nodes match
@@ -465,6 +502,103 @@
         });
     }
 
+    function drawPlanEdges() {
+        if (!planSvg || !planGrid) return;
+        let defs = planSvg.querySelector("defs");
+        if (!defs) {
+            defs = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "defs"
+            );
+            planSvg.appendChild(defs);
+        }
+
+        if (!planSvg._edgePaths) planSvg._edgePaths = {};
+        const edgePaths = planSvg._edgePaths;
+
+        const present = new Set(
+            Array.from(planGrid.querySelectorAll(".node")).map((n) => n.id)
+        );
+
+        planEdges.forEach(([from, to]) => {
+            const key = `${from}->${to}`;
+            let path = edgePaths[key];
+            if (!path) {
+                path = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "path"
+                );
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke-width", "2");
+                path.setAttribute("data-edge", key);
+                planSvg.appendChild(path);
+                edgePaths[key] = path;
+            }
+
+            const a = planPositions[from],
+                b = planPositions[to];
+            const bothPresent = present.has(from) && present.has(to) && a && b;
+            if (!bothPresent) {
+                path.classList.add("instant-hide");
+                return;
+            } else {
+                path.classList.remove("instant-hide");
+            }
+
+            const dx = b.cx - a.cx,
+                dy = b.cy - a.cy,
+                cx = a.cx + dx * 0.5,
+                cy = a.cy + dy * 0.5 - 18;
+            path.setAttribute(
+                "d",
+                `M ${a.cx} ${a.cy} Q ${cx} ${cy} ${b.cx} ${b.cy}`
+            );
+
+            const fromNode = nodes[from];
+            if (fromNode) {
+                const strokeColor = fromNode.color || strokeFor(fromNode.area);
+                path.setAttribute("stroke", strokeColor);
+
+                const markerId = `plan-arrow-${from}-${to}`;
+                let marker = defs.querySelector(`#${markerId}`);
+                if (!marker) {
+                    marker = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "marker"
+                    );
+                    marker.setAttribute("id", markerId);
+                    marker.setAttribute("viewBox", "0 0 10 10");
+                    marker.setAttribute("refX", "9");
+                    marker.setAttribute("refY", "5");
+                    marker.setAttribute("markerWidth", "6");
+                    marker.setAttribute("markerHeight", "6");
+                    marker.setAttribute("orient", "auto-start-reverse");
+
+                    const poly = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "polygon"
+                    );
+                    poly.setAttribute("points", "0,0 10,5 0,10");
+                    poly.setAttribute("fill", strokeColor);
+                    marker.appendChild(poly);
+                    defs.appendChild(marker);
+                }
+
+                path.setAttribute("marker-end", `url(#${markerId})`);
+            }
+
+            if (shouldDimEdge(from, to)) path.classList.add("dimmed");
+            else path.classList.remove("dimmed");
+        });
+
+        Object.keys(edgePaths).forEach((key) => {
+            if (!planEdges.some(([from, to]) => `${from}->${to}` === key)) {
+                planSvg.removeChild(edgePaths[key]);
+                delete edgePaths[key];
+            }
+        });
+    }
+
     function getAncestors(start) {
         const seen = new Set([start]);
         const stack = [start];
@@ -496,6 +630,7 @@
             el.classList.toggle("dimmed", dimByIso || dimBySearch);
         });
         drawEdges();
+        drawPlanEdges();
     }
 
     function toggleIsolation(id) {
@@ -561,6 +696,7 @@
             }
             // Now that nodes are loaded, render the layouts
             layout(grid, mrTiers);
+            layout(planGrid, planTiers);
             layout(document.getElementById("gir-science"), girScience);
             layout(document.getElementById("gir-hass"), girHass);
             layout(
@@ -575,7 +711,10 @@
             updateRenderedTags();
 
             // Position everything after layout
-            requestAnimationFrame(positionAll);
+            requestAnimationFrame(() => {
+                positionAll();
+                positionPlan();
+            });
 
             // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
             const girSection = document.querySelector(".section.gir");
@@ -602,6 +741,7 @@
             console.warn("Could not merge classes.json:", err);
             // Fallback: render layouts even if JSON fails
             layout(grid, mrTiers);
+            layout(planGrid, planTiers);
             layout(document.getElementById("gir-science"), girScience);
             layout(document.getElementById("gir-hass"), girHass);
             layout(
@@ -611,9 +751,13 @@
             layout(document.getElementById("gir-lab"), girLab);
             layout(document.getElementById("gir-pe"), girPE);
             layout(document.getElementById("gir-rest"), girRest);
-            requestAnimationFrame(positionAll);
+            requestAnimationFrame(() => {
+                positionAll();
+                positionPlan();
+            });
         });
     new ResizeObserver(() => positionAll()).observe(grid);
+    if (planGrid) new ResizeObserver(() => positionPlan()).observe(planGrid);
 
     // Also observe GIR containers for responsive sizing
     const girContainers = document.querySelectorAll(
