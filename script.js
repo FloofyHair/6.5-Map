@@ -73,15 +73,15 @@
     ];
 
     const planTiers = [
-        { title: "Semester 1", courses: [] },
-        { title: "Semester 2", courses: [] },
-        { title: "Semester 3", courses: [] },
+        { title: "ASE", courses: ["A6_100A"] },
+        { title: "Semester 1", courses: ["A8_01", "A18_01A", "A24_00"] },
+        { title: "Semester 2", courses: ["A8_02", "A18_02", "A6_1904"] },
+        { title: "Semester 3", courses: ["A6_2000"] },
         { title: "Semester 4", courses: [] },
         { title: "Semester 5", courses: [] },
         { title: "Semester 6", courses: [] },
         { title: "Semester 7", courses: [] },
         { title: "Semester 8", courses: [] },
-        { title: "Credit", courses: [] },
     ];
 
     const girScience = [
@@ -162,7 +162,26 @@
         ["A6_100A", "A6_3000"],
     ];
 
-    const planEdges = [];
+    const planEdges = [
+        ["A8_01", "A6_1200"],
+        ["A6_100A", "A6_1210"],
+        ["A6_1200", "A6_1210"],
+        ["A6_100A", "A6_1904"],
+        ["A8_02", "A6_1910"],
+        ["A6_100A", "A6_1910"],
+        ["A6_1904", "A6_1910"],
+        ["A8_02", "A6_2000"],
+        ["A8_01", "A6_3100"],
+        ["A18_06", "A6_3100"],
+        ["A8_01", "A8_02"],
+        ["A18_01A", "A18_02"],
+        ["A18_02", "A6_3800"],
+        ["A18_02", "A18_06"],
+        ["A6_1910", "A6_9000"],
+        ["A6_2000", "A6_9000"],
+        ["A6_3000", "A6_9000"],
+        ["A6_100A", "A6_3000"],
+    ];
 
     // --- Elements -------------------------------------------------------
     async function mergeTagsFromJson() {
