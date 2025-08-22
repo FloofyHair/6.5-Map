@@ -363,13 +363,31 @@
         });
     }
 
-    function equalizeRowHeights(gridEl) {
+    function equalizeRowSizes(gridEl) {
         const tiers = Array.from(gridEl.querySelectorAll(".tier"));
+
+        // reset existing inline sizing
         tiers.forEach((tier) => {
             tier.querySelectorAll(".node").forEach((node) => {
                 node.style.height = "";
+                node.style.width = "";
             });
         });
+
+        // equalize widths across all nodes in the grid
+        let maxWidth = 0;
+        tiers.forEach((tier) => {
+            tier.querySelectorAll(".node").forEach((node) => {
+                if (node.offsetWidth > maxWidth) maxWidth = node.offsetWidth;
+            });
+        });
+        tiers.forEach((tier) => {
+            tier.querySelectorAll(".node").forEach((node) => {
+                node.style.width = `${maxWidth}px`;
+            });
+        });
+
+        // equalize heights row by row
         const maxRows = Math.max(
             0,
             ...tiers.map((t) => t.querySelectorAll(".node").length)
@@ -386,10 +404,10 @@
         }
     }
 
-    function equalizeAllRows() {
+    function equalizeAllSizes() {
         document
             .querySelectorAll(".grid")
-            .forEach((gridEl) => equalizeRowHeights(gridEl));
+            .forEach((gridEl) => equalizeRowSizes(gridEl));
     }
     function layout(gridEl, tierData) {
         gridEl.innerHTML = "";
@@ -399,7 +417,7 @@
             gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, minmax(150px, 1fr))`;
             gridEl.style.width = "";
         } else {
-            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
+            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, minmax(0, 1fr))`;
             gridEl.style.width = "";
         }
 
@@ -855,7 +873,7 @@
             }
         });
 
-        equalizeAllRows();
+        equalizeAllSizes();
     }
 
     // Apply responsive sizing on load and resize
