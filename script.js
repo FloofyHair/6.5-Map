@@ -46,6 +46,27 @@
         return row;
     }
 
+    // Theme toggle ------------------------------------------------------
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    function applyTheme(mode) {
+        if (mode === "light") {
+            root.classList.add("light");
+            themeToggle.textContent = "Dark mode";
+        } else {
+            root.classList.remove("light");
+            themeToggle.textContent = "Light mode";
+        }
+    }
+
+    applyTheme(localStorage.getItem("theme"));
+    themeToggle.addEventListener("click", () => {
+        const next = root.classList.contains("light") ? "dark" : "light";
+        localStorage.setItem("theme", next);
+        applyTheme(next);
+    });
+
     // --- Data ------------------------------------------------------------
     const nodes = {};
 
