@@ -1,6 +1,3 @@
 # 6.5-Map
 
-Prerequisite map for MIT 6-5.
-
-Open `index.html` in your browser. Styles are in `styles.css` and JavaScript logic in `script.js`.
-
+Course map for MIT 6-5.
