@@ -53,16 +53,16 @@
     function applyTheme(mode) {
         if (mode === "light") {
             root.classList.add("light");
-            themeToggle.textContent = "Dark mode";
+            themeToggle.checked = true;
         } else {
             root.classList.remove("light");
-            themeToggle.textContent = "Light mode";
+            themeToggle.checked = false;
         }
     }
 
     applyTheme(localStorage.getItem("theme"));
-    themeToggle.addEventListener("click", () => {
-        const next = root.classList.contains("light") ? "dark" : "light";
+    themeToggle.addEventListener("change", () => {
+        const next = themeToggle.checked ? "light" : "dark";
         localStorage.setItem("theme", next);
         applyTheme(next);
     });
