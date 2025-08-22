@@ -142,7 +142,7 @@
         },
         {
             title: "CI-M",
-            courses: ["A6_2220"],
+            courses: ["A6_2040", "A6_2050", "A6_2060", "A6_2220"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
         },
     ];
@@ -764,7 +764,6 @@
                 positionAll();
                 positionPlan();
             });
-
         })
         .catch((err) => {
             console.warn("Could not merge classes.json:", err);
