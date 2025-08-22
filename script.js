@@ -343,7 +343,16 @@
     }
     function layout(gridEl, tierData) {
         gridEl.innerHTML = "";
-        gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
+
+        const isGir = gridEl.closest(".gir-board");
+        if (isGir) {
+            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, minmax(150px, 1fr))`;
+            gridEl.style.width = "max-content";
+        } else {
+            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
+            gridEl.style.width = "";
+        }
+
         tierData.forEach((col) => {
             const tier = document.createElement("div");
             tier.className = "tier";
@@ -748,11 +757,16 @@
                     const scienceCount = girScience.length; // 4
                     const hassCount = girHass.length; // 5
                     const total = scienceCount + hassCount;
-                    const sciencePct = (scienceCount / total) * 100;
-                    const hassPct = (hassCount / total) * 100;
-                    // First block is Science Core in markup
-                    blocks[0].style.flex = `0 0 ${sciencePct}%`;
-                    blocks[1].style.flex = `0 0 ${hassPct}%`;
+                    const isWide = window.innerWidth > 800;
+                    if (isWide) {
+                        const sciencePct = (scienceCount / total) * 100;
+                        const hassPct = (hassCount / total) * 100;
+                        // First block is Science Core in markup
+                        blocks[0].style.flex = `0 0 ${sciencePct}%`;
+                        blocks[1].style.flex = `0 0 ${hassPct}%`;
+                    } else {
+                        blocks.forEach((b) => (b.style.flex = "0 0 auto"));
+                    }
                 }
             }
         })

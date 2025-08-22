@@ -133,7 +133,6 @@ input[type="search"] {
 }
 .stage > h2 {
     margin: 0 0 8px;
-    font-family: "Courier New", Courier, monospace;
 }
 .board {
     position: relative;
