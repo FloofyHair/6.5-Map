@@ -362,6 +362,35 @@
             container.appendChild(renderTagIcons(nodes[id].tags || []));
         });
     }
+
+    function equalizeRowHeights(gridEl) {
+        const tiers = Array.from(gridEl.querySelectorAll(".tier"));
+        tiers.forEach((tier) => {
+            tier.querySelectorAll(".node").forEach((node) => {
+                node.style.height = "";
+            });
+        });
+        const maxRows = Math.max(
+            0,
+            ...tiers.map((t) => t.querySelectorAll(".node").length)
+        );
+        for (let i = 0; i < maxRows; i++) {
+            const rowNodes = tiers
+                .map((t) => t.querySelectorAll(".node")[i])
+                .filter(Boolean);
+            let max = 0;
+            rowNodes.forEach((n) => {
+                if (n.offsetHeight > max) max = n.offsetHeight;
+            });
+            rowNodes.forEach((n) => (n.style.height = `${max}px`));
+        }
+    }
+
+    function equalizeAllRows() {
+        document
+            .querySelectorAll(".grid")
+            .forEach((gridEl) => equalizeRowHeights(gridEl));
+    }
     function layout(gridEl, tierData) {
         gridEl.innerHTML = "";
 
@@ -400,6 +429,7 @@
             }
             gridEl.appendChild(tier);
         });
+
     }
 
     function positionAll() {
@@ -759,7 +789,8 @@
             // Update rendered tag rows now that tags are available
             updateRenderedTags();
 
-            // Position everything after layout
+            // Apply responsive sizing and position after tags render
+            applyResponsiveSizing();
             requestAnimationFrame(() => {
                 positionAll();
                 positionPlan();
@@ -779,6 +810,7 @@
             layout(document.getElementById("gir-lab"), girLab);
             layout(document.getElementById("gir-pe"), girPE);
             layout(document.getElementById("gir-rest"), girRest);
+            applyResponsiveSizing();
             requestAnimationFrame(() => {
                 positionAll();
                 positionPlan();
@@ -822,6 +854,8 @@
                 if (code) code.style.marginBottom = "";
             }
         });
+
+        equalizeAllRows();
     }
 
     // Apply responsive sizing on load and resize
