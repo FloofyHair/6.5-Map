@@ -347,7 +347,7 @@
         const isGir = gridEl.closest(".gir-board");
         if (isGir) {
             gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, minmax(150px, 1fr))`;
-            gridEl.style.width = "max-content";
+            gridEl.style.width = "";
         } else {
             gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
             gridEl.style.width = "";
@@ -744,31 +744,6 @@
                 positionPlan();
             });
 
-            // Ensure HASS vs Science Core blocks have proportional widths so tier columns match
-            const girSection = document.querySelector(".section.gir");
-            const girRows = girSection
-                ? girSection.querySelectorAll(".section-row")
-                : null;
-            if (girRows && girRows[0]) {
-                const blocks = girRows[0].querySelectorAll(
-                    ".gir-block, .section-block"
-                );
-                if (blocks.length >= 2) {
-                    const scienceCount = girScience.length; // 4
-                    const hassCount = girHass.length; // 5
-                    const total = scienceCount + hassCount;
-                    const isWide = window.innerWidth > 800;
-                    if (isWide) {
-                        const sciencePct = (scienceCount / total) * 100;
-                        const hassPct = (hassCount / total) * 100;
-                        // First block is Science Core in markup
-                        blocks[0].style.flex = `0 0 ${sciencePct}%`;
-                        blocks[1].style.flex = `0 0 ${hassPct}%`;
-                    } else {
-                        blocks.forEach((b) => (b.style.flex = "0 0 auto"));
-                    }
-                }
-            }
         })
         .catch((err) => {
             console.warn("Could not merge classes.json:", err);
