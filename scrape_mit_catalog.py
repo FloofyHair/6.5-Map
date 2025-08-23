@@ -6,9 +6,9 @@ Fetches and parses MIT's course catalog search result for given course codes
 (e.g., "6.1200", "18.06", "5.111") and outputs normalized JSON.
 
 Usage:
-  python scrape_mit_catalog.py 6.1200
-  python scrape_mit_catalog.py 6.1200 18.06 8.02
-  python scrape_mit_catalog.py --merge classes.json 6.1200 18.06
+  python3 scrape_mit_catalog.py 6.1200
+  python3 scrape_mit_catalog.py 6.1200 18.06 8.02
+  python3 scrape_mit_catalog.py --merge classes.json 6.1200 18.06
 
 Requires:
   pip install requests beautifulsoup4

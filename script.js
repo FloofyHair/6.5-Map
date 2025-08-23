@@ -1,72 +1,4 @@
 (function () {
-    // Tag icons via CSS mask + color variable
-    function cssVarForTag(tag) {
-        const slug = String(tag)
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-        return `var(--tag-${slug}, var(--muted))`;
-    }
-    function urlForTagSvg(tag) {
-        const slug = String(tag)
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-        // console.log(slug);
-        return `url('icons/${slug}.svg')`;
-    }
-
-    function renderTagIcons(tags) {
-        const row = document.createElement("div");
-        row.className = "tags";
-        (tags || []).forEach((tag) => {
-            const el = document.createElement("span");
-            el.className = "tag-icon";
-            el.style.setProperty("--tag-color", cssVarForTag(tag));
-
-            // Try to load the specific icon, fallback to default if it fails
-            const iconUrl = urlForTagSvg(tag);
-            el.style.setProperty("--tag-icon-url", iconUrl);
-
-            // Add error handling for missing icons
-            const img = new Image();
-            img.onerror = () => {
-                el.style.setProperty(
-                    "--tag-icon-url",
-                    "url('icons/default.svg')"
-                );
-            };
-            img.src = iconUrl.replace("url('", "").replace("')", "");
-
-            el.title = String(tag);
-            row.appendChild(el);
-        });
-        return row;
-    }
-
-    // Theme toggle ------------------------------------------------------
-    const themeToggle = document.getElementById("themeToggle");
-    const root = document.documentElement;
-
-    function applyTheme(mode) {
-        if (mode === "light") {
-            root.classList.add("light");
-            themeToggle.checked = true;
-        } else {
-            root.classList.remove("light");
-            themeToggle.checked = false;
-        }
-    }
-
-    applyTheme(localStorage.getItem("theme"));
-    themeToggle.addEventListener("change", () => {
-        const next = themeToggle.checked ? "light" : "dark";
-        localStorage.setItem("theme", next);
-        applyTheme(next);
-    });
-
     // --- Data ------------------------------------------------------------
     const nodes = {};
 
@@ -95,7 +27,10 @@
 
     const planTiers = [
         { title: "ASE", courses: ["A6_100A"] },
-        { title: "Semester 1", courses: ["A8_01", "A18_01A", "A24_00"] },
+        {
+            title: "Semester 1",
+            courses: ["A8_01", "A18_01A", "A5_111", "A24_00"],
+        },
         { title: "Semester 2", courses: ["A8_02", "A18_02", "A6_1904"] },
         { title: "Semester 3", courses: ["A6_2000"] },
         { title: "Semester 4", courses: [] },
@@ -203,6 +138,74 @@
         ["A6_3000", "A6_9000"],
         ["A6_100A", "A6_3000"],
     ];
+
+    // Tag icons via CSS mask + color variable
+    function cssVarForTag(tag) {
+        const slug = String(tag)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+        return `var(--tag-${slug}, var(--muted))`;
+    }
+    function urlForTagSvg(tag) {
+        const slug = String(tag)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "");
+        // console.log(slug);
+        return `url('icons/${slug}.svg')`;
+    }
+
+    function renderTagIcons(tags) {
+        const row = document.createElement("div");
+        row.className = "tags";
+        (tags || []).forEach((tag) => {
+            const el = document.createElement("span");
+            el.className = "tag-icon";
+            el.style.setProperty("--tag-color", cssVarForTag(tag));
+
+            // Try to load the specific icon, fallback to default if it fails
+            const iconUrl = urlForTagSvg(tag);
+            el.style.setProperty("--tag-icon-url", iconUrl);
+
+            // Add error handling for missing icons
+            const img = new Image();
+            img.onerror = () => {
+                el.style.setProperty(
+                    "--tag-icon-url",
+                    "url('icons/default.svg')"
+                );
+            };
+            img.src = iconUrl.replace("url('", "").replace("')", "");
+
+            el.title = String(tag);
+            row.appendChild(el);
+        });
+        return row;
+    }
+
+    // Theme toggle ------------------------------------------------------
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    function applyTheme(mode) {
+        if (mode === "light") {
+            root.classList.add("light");
+            themeToggle.checked = true;
+        } else {
+            root.classList.remove("light");
+            themeToggle.checked = false;
+        }
+    }
+
+    applyTheme(localStorage.getItem("theme"));
+    themeToggle.addEventListener("change", () => {
+        const next = themeToggle.checked ? "light" : "dark";
+        localStorage.setItem("theme", next);
+        applyTheme(next);
+    });
 
     // --- Elements -------------------------------------------------------
     async function mergeTagsFromJson() {
