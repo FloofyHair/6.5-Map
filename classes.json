@@ -444,6 +444,83 @@
       ],
       "area": "ee",
       "color": "var(--ee)"
+    },
+    "A18_02A": {
+      "code": "18.02A",
+      "title": "Calculus",
+      "label": "Calculus",
+      "description": "First half is taught during the last six weeks of the Fall term; covers material in the first half of 18.02 (through double integrals). Second half of 18.02A can be taken either during IAP (daily lectures) or during the second half of the Spring term; it covers the remaining material in 18.02.",
+      "units": "5-0-7",
+      "prereq_text": "Calculus I (GIR)",
+      "instructors": [
+        "C. Kehle"
+      ],
+      "tags": [
+        "Undergrad",
+        "Fall",
+        "IAP",
+        "Spring",
+        "Calculus II"
+      ],
+      "area": "math",
+      "color": "var(--math)"
+    },
+    "A3_091": {
+      "code": "3.091",
+      "title": "Introduction to Solid-State Chemistry",
+      "label": "Introduction to Solid-State Chemistry",
+      "description": "Basic principles of chemistry and their application to engineering systems. The relationship between electronic structure, chemical bonding, and atomic order. Characterization of atomic arrangements in crystalline and amorphous solids: metals, ceramics, semiconductors, and polymers. Topical coverage of organic chemistry, solution chemistry, acid-base equilibria, electrochemistry, biochemistry, chemical kinetics, diffusion, and phase diagrams. Examples from industrial practice (including the environmental impact of chemical processes), from energy generation and storage (e.g., batteries and fuel cells), and from emerging technologies (e.g., photonic and biomedical devices).",
+      "units": "5-0-7",
+      "prereq_text": "None",
+      "instructors": [
+        "K. Kolenbrander, T. Lopez Silva",
+        "R. Gomez-Bombarelli, T. Wallin"
+      ],
+      "tags": [
+        "Undergrad",
+        "Fall",
+        "Spring",
+        "Chemistry"
+      ],
+      "area": "other",
+      "color": "var(--other)"
+    },
+    "A24_01": {
+      "code": "24.01",
+      "title": "Classics of Western Philosophy",
+      "label": "Classics of Western Philosophy",
+      "description": "Introduction to Western philosophical tradition through the study of selected major thinkers such as Plato, Aristotle, Lucretius, Descartes, Hobbes, Leibniz, Locke, Berkeley, Hume, Kant, Nietzsche and Marx. Emphasis on changes of intellectual outlook over time, and the complex interplay of scientific, religious and political concerns that influence the development of philosophical ideas.",
+      "units": "3-0-9",
+      "prereq_text": "None",
+      "instructors": [
+        "S. Haslanger"
+      ],
+      "tags": [
+        "Undergrad",
+        "Fall",
+        "HASS Humanities",
+        "Communication Intensive HASS"
+      ],
+      "area": "other",
+      "color": "var(--other)"
+    },
+    "A7_015": {
+      "code": "7.015",
+      "title": "Introductory Biology",
+      "label": "Introductory Biology",
+      "description": "Discusses core principles including chemical bonding and molecular interactions, protein structure/function and basic thermodynamics, how information flows in the cell, genetics, tools for studying and manipulating genetic material, sequencing, cell biology, evolution, and how the body fights off harmful disease-causing agents. 7.015 presents the core principles through the lens of modern, trending topics in biology. Students read popular science articles and discuss social and ethical issues surrounding contemporary biology. Limited to 70; admittance may be controlled by lottery.",
+      "units": "5-0-7",
+      "prereq_text": "None",
+      "instructors": [
+        "M. Laub, S. Vos"
+      ],
+      "tags": [
+        "Undergrad",
+        "Fall",
+        "Biology"
+      ],
+      "area": "other",
+      "color": "var(--other)"
     }
   }
 }

@@ -51,6 +51,37 @@
     --border-strong: rgba(0, 0, 0, 0.5);
     --focus-outline: #00000055;
 }
+
+:root {
+    /* Tag color variables */
+    --tag-fall: #e67e22;
+    --tag-spring: #27ae60;
+    --tag-iap: #16a085;
+    --tag-summer: #d35400;
+    --tag-undergrad: #2980b9;
+    --tag-grad: #8e44ad;
+    --tag-rest-elec-in-sci--tech: #c2185b;
+    --tag-ci-h: #2c3e50;
+    --tag-ci-hw: #34495e;
+    --tag-ci-m: #c0392b;
+    --tag-hass-h: #9b59b6;
+    --tag-hass-a: #8e44ad;
+    --tag-hass-s: #6c5ce7;
+    --tag-institute-lab: #1e96ce;
+    --tag-partial-lab: #1e96ce;
+    --tag-not-regularly: #7f8c8d;
+    --tag-joint: #872be9;
+    --tag-hass-humanities: #51ba48;
+    --tag-communication-intensive-hass: #dad421;
+    --tag-biology: #44bb6f;
+    --tag-iap: #3da7c4;
+    --tag-calculus-i: var(--math);
+    --tag-calculus-ii: var(--math);
+    --tag-physics-i: var(--phys);
+    --tag-physics-ii: var(--phys);
+    --tag-chemistry: var(--chem);
+}
+
 * {
     box-sizing: border-box;
 }
@@ -374,6 +405,11 @@ svg.edges {
 .node.dimmed {
     opacity: 0.18 !important;
 }
+
+/* Selected course highlighting */
+.node.selected {
+    box-shadow: 0 0 0 2px var(--focus-outline), var(--shadow);
+}
 svg.edges path.dimmed {
     opacity: 0;
 }
@@ -566,34 +602,6 @@ svg.edges path.dimmed {
     max-width: none;
 }
 
-:root {
-    /* Tag color variables */
-    --tag-fall: #e67e22;
-    --tag-spring: #27ae60;
-    --tag-iap: #16a085;
-    --tag-summer: #d35400;
-    --tag-undergrad: #2980b9;
-    --tag-grad: #8e44ad;
-    --tag-rest-elec-in-sci--tech: #c2185b;
-    --tag-ci-h: #2c3e50;
-    --tag-ci-hw: #34495e;
-    --tag-ci-m: #c0392b;
-    --tag-hass-h: #9b59b6;
-    --tag-hass-a: #8e44ad;
-    --tag-hass-s: #6c5ce7;
-    --tag-institute-lab: #1e96ce;
-    --tag-partial-lab: #1e96ce;
-    --tag-not-regularly: #7f8c8d;
-    --tag-joint: #872be9;
-    --tag-hass-humanities: #51ba48;
-    --tag-communication-intensive-hass: #dad421;
-    --tag-calculus-i: var(--math);
-    --tag-calculus-ii: var(--math);
-    --tag-physics-i: var(--phys);
-    --tag-physics-ii: var(--phys);
-    --tag-chemistry: var(--chem);
-}
-
 /* Head row (code + tags inline) */
 .node .head {
     display: flex;
@@ -653,4 +661,26 @@ svg.edges path.dimmed {
     gap: 6px;
     flex-wrap: wrap;
     align-items: center;
+}
+
+/* Custom tooltip for faster hover feedback */
+.custom-tooltip {
+    position: fixed;
+    background: var(--panel);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    pointer-events: none;
+    display: none;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.custom-tooltip.show {
+    opacity: 1;
 }

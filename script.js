@@ -5,7 +5,7 @@
     const mrTiers = [
         {
             title: "Tier 1",
-            courses: ["A8_01", "A18_01A", "A6_100A"],
+            courses: ["A8_01", "A18_01", "A6_100A"],
         },
         {
             title: "Tier 2",
@@ -29,9 +29,9 @@
         { title: "ASE", courses: ["A6_100A"] },
         {
             title: "Semester 1",
-            courses: ["A8_01", "A18_01A", "A5_111", "A24_00"],
+            courses: ["A8_01", "A18_01A", "A18_02A", "A3_091", "A24_01"],
         },
-        { title: "Semester 2", courses: ["A8_02", "A18_02", "A6_1904"] },
+        { title: "Semester 2", courses: ["A8_02", "A6_1904"] },
         { title: "Semester 3", courses: ["A6_2000"] },
         { title: "Semester 4", courses: [] },
         { title: "Semester 5", courses: [] },
@@ -43,12 +43,12 @@
     const girScience = [
         {
             title: "Biology",
-            courses: [],
+            courses: ["A7_015"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Chemistry",
-            courses: ["A5_111"],
+            courses: ["A3_091"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
@@ -58,12 +58,12 @@
         },
         {
             title: "Math",
-            courses: ["A18_01A", "A18_02"],
+            courses: ["A18_01A", "A18_02A"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
     ];
     const girHass = [
-        { title: "Humanities", courses: ["A24_00"] },
+        { title: "Humanities", courses: ["A24_01"] },
         { title: "Arts", courses: [] },
         { title: "Social Sciencies", courses: [] },
         { title: "Concentration", courses: [] },
@@ -72,12 +72,12 @@
     const girCommunication = [
         {
             title: "CI-H",
-            courses: ["A24_00"],
+            courses: ["A24_01"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-hhw-subjects/listing",
         },
         {
             title: "CI-M",
-            courses: ["A6_2040", "A6_2050", "A6_2060", "A6_2220"],
+            courses: ["A6_2040", "A6_2050"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
         },
     ];
@@ -92,7 +92,7 @@
     const girRest = [
         {
             title: "REST",
-            courses: ["A6_1200", "A6_1910", "A6_2000", "A6_3000", "A18_06"],
+            courses: ["A6_1200", "A18_06"],
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#restrequirementtext",
         },
     ];
@@ -109,13 +109,14 @@
         ["A8_01", "A6_3100"],
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
-        ["A18_01A", "A18_02"],
+        ["A18_01", "A18_02"],
         ["A18_02", "A6_3800"],
         ["A18_02", "A18_06"],
         ["A6_1910", "A6_9000"],
         ["A6_2000", "A6_9000"],
         ["A6_3000", "A6_9000"],
         ["A6_100A", "A6_3000"],
+        ["A18_01A", "A18_02A"],
     ];
 
     const planEdges = [
@@ -130,13 +131,14 @@
         ["A8_01", "A6_3100"],
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
-        ["A18_01A", "A18_02"],
+        ["A18_01", "A18_02"],
         ["A18_02", "A6_3800"],
         ["A18_02", "A18_06"],
         ["A6_1910", "A6_9000"],
         ["A6_2000", "A6_9000"],
         ["A6_3000", "A6_9000"],
         ["A6_100A", "A6_3000"],
+        ["A18_01A", "A18_02A"],
     ];
 
     // Tag icons via CSS mask + color variable
@@ -180,10 +182,86 @@
             };
             img.src = iconUrl.replace("url('", "").replace("')", "");
 
-            el.title = String(tag);
+            // Remove title attribute and add custom tooltip functionality
+            el.setAttribute("data-tooltip", String(tag));
             row.appendChild(el);
         });
         return row;
+    }
+
+    // Custom tooltip system for faster tooltips
+    function initCustomTooltips() {
+        let tooltip = null;
+
+        function createTooltip() {
+            if (tooltip) return tooltip;
+            tooltip = document.createElement("div");
+            tooltip.className = "custom-tooltip";
+            document.body.appendChild(tooltip);
+            return tooltip;
+        }
+
+        function showTooltip(element, text) {
+            const tooltip = createTooltip();
+            tooltip.textContent = text;
+            tooltip.style.display = "block";
+
+            // Force a reflow to get accurate dimensions
+            tooltip.offsetHeight;
+
+            const rect = element.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+
+            // Position tooltip above the element, centered
+            let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+            let top = rect.top - tooltipRect.height - 8;
+
+            // Adjust if tooltip would go off screen
+            if (left < 8) left = 8;
+            if (left + tooltipRect.width > window.innerWidth - 8) {
+                left = window.innerWidth - tooltipRect.width - 8;
+            }
+            if (top < 8) {
+                // Show below instead
+                top = rect.bottom + 8;
+            }
+
+            tooltip.style.left = left + "px";
+            tooltip.style.top = top + "px";
+
+            // Trigger the fade-in animation
+            requestAnimationFrame(() => {
+                tooltip.classList.add("show");
+            });
+        }
+
+        function hideTooltip() {
+            if (tooltip) {
+                tooltip.classList.remove("show");
+                // Hide after transition completes
+                setTimeout(() => {
+                    if (tooltip && !tooltip.classList.contains("show")) {
+                        tooltip.style.display = "none";
+                    }
+                }, 100);
+            }
+        }
+
+        // Add event listeners to all tag icons
+        document.addEventListener("mouseover", (e) => {
+            if (
+                e.target.classList.contains("tag-icon") &&
+                e.target.hasAttribute("data-tooltip")
+            ) {
+                showTooltip(e.target, e.target.getAttribute("data-tooltip"));
+            }
+        });
+
+        document.addEventListener("mouseout", (e) => {
+            if (e.target.classList.contains("tag-icon")) {
+                hideTooltip();
+            }
+        });
     }
 
     // Theme toggle ------------------------------------------------------
@@ -250,6 +328,7 @@
     const positions = {}; // id -> {cx,cy}
     const planPositions = {}; // id -> {cx,cy}
     let isolatedSet = null; // Set<string>|null
+    let selectedCourseId = null; // string|null - the course that was clicked to create the isolated set
     let currentSearch = "";
     const nodeMatches = {}; // id -> boolean
 
@@ -320,14 +399,13 @@
 
             el.addEventListener("click", (e) => {
                 e.stopPropagation();
+                const wasSelected = isolatedSet && isolatedSet.has(id);
                 toggleIsolation(id);
-                showInfo(id);
-            });
-            el.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleIsolation(id);
+
+                if (!wasSelected) {
                     showInfo(id);
+                } else {
+                    hideInfo();
                 }
             });
         } else {
@@ -680,6 +758,9 @@
             const dimByIso = !!isolatedSet && !isolatedSet.has(id);
             const dimBySearch = !!currentSearch && !nodeMatches[id];
             el.classList.toggle("dimmed", dimByIso || dimBySearch);
+
+            // Add selected class to the currently selected course
+            el.classList.toggle("selected", id === selectedCourseId);
         });
         drawEdges();
         drawPlanEdges();
@@ -692,14 +773,8 @@
             next.size === isolatedSet.size &&
             [...next].every((x) => isolatedSet.has(x));
         isolatedSet = same ? null : next;
+        selectedCourseId = same ? null : id;
         applyVisibility();
-    }
-
-    function clearAll() {
-        isolatedSet = null;
-        if (searchInput) searchInput.value = "";
-        applyVisibility();
-        hideInfo();
     }
 
     // --- Info panel logic ----------------------------------------------
@@ -728,7 +803,12 @@
         info.classList.add("visible");
     }
     function hideInfo() {
+        console.log("close");
         info.classList.remove("visible");
+        // Clear course selection when hiding info panel
+        isolatedSet = null;
+        selectedCourseId = null;
+        applyVisibility();
     }
 
     // --- Init -----------------------------------------------------------
@@ -832,12 +912,11 @@
     window.addEventListener("resize", applyResponsiveSizing);
 
     if (searchInput) searchInput.addEventListener("input", applyVisibility);
-    if (resetBtn) resetBtn.addEventListener("click", clearAll);
-    window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") clearAll();
-    });
     infoClose.addEventListener("click", hideInfo);
     // clicking outside the panel but inside board does not close it; Reset/ESC will.
+
+    // Initialize custom tooltips for faster hover feedback
+    initCustomTooltips();
 
     // Panning (not on interactive controls)
     let isPanning = false,
