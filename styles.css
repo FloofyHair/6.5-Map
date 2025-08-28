@@ -330,6 +330,24 @@ input[type="search"] {
     border: 1px solid var(--border);
 }
 
+/* Small progress counter badge shown on GIR tiers */
+.tier-counter {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    background: var(--panel);
+    padding: 2px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+.tier-counter.met {
+    color: var(--math);
+    border-color: var(--math);
+}
+
 .tier-title a {
     color: inherit;
     text-decoration: none;
@@ -431,6 +449,25 @@ svg.edges {
 /* Selected course highlighting */
 .node.selected {
     box-shadow: 0 0 0 2px var(--focus-outline), var(--shadow);
+}
+
+/* Planned checkmark badge on MR nodes */
+.node .planned-check {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--math);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    box-shadow: var(--shadow);
 }
 svg.edges path.dimmed {
     opacity: 0;

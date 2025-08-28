@@ -49,42 +49,73 @@
         {
             title: "Biology",
             tags: ["Biology"],
+            required: 1,
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Chemistry",
             tags: ["Chemistry"],
+            required: 1,
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Physics",
             tags: ["Physics I", "Physics II"],
+            required: 2,
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Math",
             tags: ["Calculus I", "Calculus II"],
+            required: 2,
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
     ];
     const girHassTags = [
-        { title: "Humanities", tags: ["HASS Humanities"] },
-        { title: "Arts", tags: ["HASS Arts"] },
-        { title: "Social Sciences", tags: ["HASS Social Sciences"] },
+        {
+            title: "Humanities",
+            tags: ["HASS Humanities"],
+            required: 1,
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/hass-requirement",
+        },
+        {
+            title: "Arts",
+            tags: ["HASS Arts"],
+            required: 1,
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/hass-requirement",
+        },
+        {
+            title: "Social Sciences",
+            tags: ["HASS Social Sciences"],
+            required: 1,
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/hass-requirement",
+        },
         // These are structural requirement buckets; no direct tag mapping
-        { title: "Concentration", tags: [] },
-        { title: "Electives", tags: [] },
+        {
+            title: "Concentration",
+            tags: [],
+            required: 0,
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/hass-requirement/hass-concentrations",
+        },
+        {
+            title: "Electives",
+            tags: [],
+            required: 0,
+            link: "https://registrar.mit.edu/registration-academics/academic-requirements/hass-requirement",
+        },
     ];
     const girCommunicationTags = [
         {
             title: "CI-H",
             tags: ["Communication Intensive HASS"],
+            required: 2,
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-hhw-subjects/listing",
         },
         {
             title: "CI-M",
             // If classes.json adds CI-M tags later, they will appear automatically
             tags: ["Communication Intensive in Major"],
+            required: 2,
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
         },
     ];
@@ -92,14 +123,23 @@
         {
             title: "Lab",
             tags: ["Institute Lab", "Partial Lab"],
+            required: 1,
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#laboratoryrequirementtext",
         },
     ];
-    const girPeTags = [{ title: "PE", tags: ["PE"] }];
+    const girPeTags = [
+        {
+            title: "PE",
+            tags: ["PE"],
+            required: 1,
+            link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/physical-education-requirement/",
+        },
+    ];
     const girRestTags = [
         {
             title: "REST",
             tags: ["Rest Elec in Sci & Tech"],
+            required: 2,
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#restrequirementtext",
         },
     ];
@@ -133,7 +173,12 @@
                 // Include if any tag matches
                 if (d.tags.some((t) => col.tags.includes(t))) courses.push(id);
             });
-            return { title: col.title, link: col.link, courses };
+            return {
+                title: col.title,
+                link: col.link,
+                required: col.required || 0,
+                courses,
+            };
         });
     }
 
@@ -149,9 +194,9 @@
         ["A8_01", "A6_3100"],
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
-        ["A18_01", "A18_02"],
-        ["A18_02", "A6_3800"],
-        ["A18_02", "A18_06"],
+        ["A18_01A", "A18_02A"],
+        ["A18_02A", "A6_3800"],
+        ["A18_02A", "A18_06"],
         ["A6_1910", "A6_9000"],
         ["A6_2000", "A6_9000"],
         ["A6_3000", "A6_9000"],
@@ -171,9 +216,9 @@
         ["A8_01", "A6_3100"],
         ["A18_06", "A6_3100"],
         ["A8_01", "A8_02"],
-        ["A18_01", "A18_02"],
-        ["A18_02", "A6_3800"],
-        ["A18_02", "A18_06"],
+        ["A18_01A", "A18_02A"],
+        ["A18_02A", "A6_3800"],
+        ["A18_02A", "A18_06"],
         ["A6_1910", "A6_9000"],
         ["A6_2000", "A6_9000"],
         ["A6_3000", "A6_9000"],
@@ -406,7 +451,11 @@
             : cssVar("--ee");
     }
 
-    function makeNodeEl(id) {
+    function isPlanned(id) {
+        return planTiers.some((t) => (t.courses || []).includes(id));
+    }
+
+    function makeNodeEl(id, opts = {}) {
         if (!id) return document.createElement("div");
 
         const d = nodes[id];
@@ -435,6 +484,16 @@
             labelEl.className = "label";
             labelEl.textContent = d.label;
             el.appendChild(labelEl);
+
+            // Planned checkmark for MR courses if present in the Course Plan
+            if (opts.showPlanCheck && isPlanned(id)) {
+                const chk = document.createElement("div");
+                chk.className = "planned-check";
+                chk.setAttribute("aria-label", "In Course Plan");
+                chk.title = "In Course Plan";
+                chk.textContent = "✓";
+                el.appendChild(chk);
+            }
 
             el.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -510,9 +569,26 @@
             }
             tier.appendChild(titleEl);
 
+            // Optional GIR progress counter (e.g., 1/2), green when met
+            const required = Number(col.required || 0);
+            if (isGir && required > 0) {
+                const count = (col.courses || []).length;
+                const counterEl = document.createElement("div");
+                counterEl.className = "tier-counter";
+                counterEl.textContent = `${Math.min(
+                    count,
+                    required
+                )}/${required}`;
+                if (count >= required) counterEl.classList.add("met");
+                tier.appendChild(counterEl);
+            }
+
             // Always render the tier, even if empty
+            const showPlanCheck = gridEl === grid; // only show checks on MR board
             if (col.courses && col.courses.length > 0) {
-                col.courses.forEach((id) => tier.appendChild(makeNodeEl(id)));
+                col.courses.forEach((id) =>
+                    tier.appendChild(makeNodeEl(id, { showPlanCheck }))
+                );
             }
             gridEl.appendChild(tier);
         });
