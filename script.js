@@ -5,11 +5,11 @@
     const mrTiers = [
         {
             title: "Tier 1",
-            courses: ["A8_01", "A18_01", "A6_100A"],
+            courses: ["A8_01", "A18_01A", "A6_100A"],
         },
         {
             title: "Tier 2",
-            courses: ["A6_1200", "A8_02", "A18_02", "A6_1904"],
+            courses: ["A6_1200", "A8_02", "A18_02A", "A6_1904"],
         },
         {
             title: "Tier 3",
@@ -31,7 +31,7 @@
             title: "Semester 1",
             courses: ["A8_01", "A18_01A", "A18_02A", "A3_091", "A24_01"],
         },
-        { title: "Semester 2", courses: ["A8_02", "A6_1904"] },
+        { title: "Semester 2", courses: ["A8_02", "A7_015", "A6_1904"] },
         { title: "Semester 3", courses: ["A6_2000"] },
         { title: "Semester 4", courses: [] },
         { title: "Semester 5", courses: [] },
@@ -39,63 +39,103 @@
         { title: "Semester 7", courses: [] },
         { title: "Semester 8", courses: [] },
     ];
+    // PE plan mirrors only the 8 semesters (no ASE)
+    const pePlanTiers = planTiers
+        .filter((t) => t.title !== "ASE")
+        .map((t) => ({ title: t.title, courses: ["Crew"] }));
 
-    const girScience = [
+    // GIR sections are now tag-driven and auto-filled from MR + Plan
+    const girScienceTags = [
         {
             title: "Biology",
-            courses: ["A7_015"],
+            tags: ["Biology"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Chemistry",
-            courses: ["A3_091"],
+            tags: ["Chemistry"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Physics",
-            courses: ["A8_01", "A8_02"],
+            tags: ["Physics I", "Physics II"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
         {
             title: "Math",
-            courses: ["A18_01A", "A18_02A"],
+            tags: ["Calculus I", "Calculus II"],
             link: "https://firstyear.mit.edu/academics-exploration/general-institute-requirements-girs/science-core/",
         },
     ];
-    const girHass = [
-        { title: "Humanities", courses: ["A24_01"] },
-        { title: "Arts", courses: [] },
-        { title: "Social Sciencies", courses: [] },
-        { title: "Concentration", courses: [] },
-        { title: "Electives", courses: [] },
+    const girHassTags = [
+        { title: "Humanities", tags: ["HASS Humanities"] },
+        { title: "Arts", tags: ["HASS Arts"] },
+        { title: "Social Sciences", tags: ["HASS Social Sciences"] },
+        // These are structural requirement buckets; no direct tag mapping
+        { title: "Concentration", tags: [] },
+        { title: "Electives", tags: [] },
     ];
-    const girCommunication = [
+    const girCommunicationTags = [
         {
             title: "CI-H",
-            courses: ["A24_01"],
+            tags: ["Communication Intensive HASS"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-hhw-subjects/listing",
         },
         {
             title: "CI-M",
-            courses: ["A6_2040", "A6_2050"],
+            // If classes.json adds CI-M tags later, they will appear automatically
+            tags: ["Communication Intensive in Major"],
             link: "https://registrar.mit.edu/registration-academics/academic-requirements/communication-requirement/ci-m-subjects/subject",
         },
     ];
-    const girLab = [
+    const girLabTags = [
         {
             title: "Lab",
-            courses: ["A6_3800", "A6_3100", "A6_9000"],
+            tags: ["Institute Lab", "Partial Lab"],
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#laboratoryrequirementtext",
         },
     ];
-    const girPE = [{ title: "PE", courses: ["Crew"] }];
-    const girRest = [
+    const girPeTags = [{ title: "PE", tags: ["PE"] }];
+    const girRestTags = [
         {
             title: "REST",
-            courses: ["A6_1200", "A18_06"],
+            tags: ["Rest Elec in Sci & Tech"],
             link: "https://catalog.mit.edu/mit/undergraduate-education/general-institute-requirements/#restrequirementtext",
         },
     ];
+
+    // Build GIR columns from tag definitions, but only using courses
+    // present in the Major Requirements, Course Plan, and PE Plan sections.
+    function computeGirFromTags(tagCols) {
+        // Collect unique IDs from MR + Plan + PE Plan
+        const allowed = new Set();
+        mrTiers.forEach((t) =>
+            (t.courses || []).forEach((id) => allowed.add(id))
+        );
+        planTiers.forEach((t) =>
+            (t.courses || []).forEach((id) => allowed.add(id))
+        );
+        if (typeof pePlanTiers !== "undefined") {
+            pePlanTiers.forEach((t) =>
+                (t.courses || []).forEach((id) => allowed.add(id))
+            );
+        }
+
+        // Map tag columns to actual course IDs using classes.json tags
+        return tagCols.map((col) => {
+            if (!col.tags || col.tags.length === 0) {
+                return { title: col.title, link: col.link, courses: [] };
+            }
+            const courses = [];
+            allowed.forEach((id) => {
+                const d = nodes[id];
+                if (!d || !d.tags) return;
+                // Include if any tag matches
+                if (d.tags.some((t) => col.tags.includes(t))) courses.push(id);
+            });
+            return { title: col.title, link: col.link, courses };
+        });
+    }
 
     const edges = [
         ["A8_01", "A6_1200"],
@@ -310,6 +350,7 @@
     const svg = document.getElementById("edges");
     const planGrid = document.getElementById("plan-grid");
     const planSvg = document.getElementById("plan-edges");
+    const pePlanGrid = document.getElementById("pe-plan-grid");
     const searchInput = document.getElementById("search");
     const resetBtn = document.getElementById("reset");
     const stage = document.getElementById("stage");
@@ -447,13 +488,12 @@
         gridEl.innerHTML = "";
 
         const isGir = gridEl.closest(".gir-board");
-        if (isGir) {
-            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, minmax(150px, 1fr))`;
-            gridEl.style.width = "";
-        } else {
-            gridEl.style.gridTemplateColumns = `repeat(${tierData.length}, 1fr)`;
-            gridEl.style.width = "";
-        }
+        const small = window.innerWidth <= 900;
+        const template = small
+            ? `repeat(${tierData.length}, minmax(200px, 1fr))`
+            : `repeat(${tierData.length}, 1fr)`;
+        gridEl.style.gridTemplateColumns = template;
+        gridEl.style.width = "";
 
         tierData.forEach((col) => {
             const tier = document.createElement("div");
@@ -829,6 +869,16 @@
             // Now that nodes are loaded, render the layouts
             layout(grid, mrTiers);
             layout(planGrid, planTiers);
+            if (pePlanGrid) layout(pePlanGrid, pePlanTiers);
+
+            // Compute GIR columns from tags using only MR + Plan courses
+            const girScience = computeGirFromTags(girScienceTags);
+            const girHass = computeGirFromTags(girHassTags);
+            const girCommunication = computeGirFromTags(girCommunicationTags);
+            const girLab = computeGirFromTags(girLabTags);
+            const girPE = computeGirFromTags(girPeTags);
+            const girRest = computeGirFromTags(girRestTags);
+
             layout(document.getElementById("gir-science"), girScience);
             layout(document.getElementById("gir-hass"), girHass);
             layout(
@@ -853,6 +903,17 @@
             // Fallback: render layouts even if JSON fails
             layout(grid, mrTiers);
             layout(planGrid, planTiers);
+            if (pePlanGrid) layout(pePlanGrid, pePlanTiers);
+
+            // Without classes.json, we still compute from tags; nodes may be missing
+            // and will render as placeholder GIR nodes.
+            const girScience = computeGirFromTags(girScienceTags);
+            const girHass = computeGirFromTags(girHassTags);
+            const girCommunication = computeGirFromTags(girCommunicationTags);
+            const girLab = computeGirFromTags(girLabTags);
+            const girPE = computeGirFromTags(girPeTags);
+            const girRest = computeGirFromTags(girRestTags);
+
             layout(document.getElementById("gir-science"), girScience);
             layout(document.getElementById("gir-hass"), girHass);
             layout(
@@ -869,6 +930,12 @@
         });
     new ResizeObserver(() => positionAll()).observe(grid);
     if (planGrid) new ResizeObserver(() => positionPlan()).observe(planGrid);
+    if (pePlanGrid)
+        new ResizeObserver(() => {
+            // PE plan has no edges; still adjust sizing
+            // Trigger reflow of nodes to keep consistent sizing
+            requestAnimationFrame(applyResponsiveSizing);
+        }).observe(pePlanGrid);
 
     // Also observe GIR containers for responsive sizing
     const girContainers = document.querySelectorAll(

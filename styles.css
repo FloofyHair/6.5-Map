@@ -261,8 +261,22 @@ input[type="search"] {
     min-width: 0;
 }
 
+/* GIR rows scroll horizontally and blocks size to content */
+.gir-row {
+    overflow-x: visible;
+}
+.gir-row .gir-block {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.gir-row .gir-board {
+    display: block;
+    width: 100%;
+    overflow-x: visible;
+}
+
 .gir-board {
-    overflow-x: auto;
+    overflow-x: visible;
 }
 .grid {
     display: grid;
@@ -356,6 +370,8 @@ svg.edges {
     transform-origin: center;
     transition: opacity 0.2s ease;
     cursor: pointer;
+    /* Enable container queries so tags can reflow under title on small cards */
+    container-type: inline-size;
 }
 .node:hover {
     transform: translateY(-2px);
@@ -366,10 +382,16 @@ svg.edges {
     letter-spacing: 0.2px;
     display: block;
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
 }
 .node .label {
     font-size: 12.5px;
     color: var(--muted);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
 }
 .node.ee {
     border-color: var(--ee);
@@ -550,16 +572,23 @@ svg.edges path.dimmed {
 }
 
 @media (max-width: 1200px) {
-    .board {
+    /* Keep wide/pannable width only for MR board */
+    .mr-board {
         min-width: 1000px;
     }
+    /* Allow Plan and GIR to shrink on small screens */
+    .plan-board,
     .gir-board,
     .section-block {
-        min-width: 200px !important;
+        min-width: 0 !important;
     }
     .node,
     .node.gir-node {
         padding: 10px 10px 10px 12px !important;
+    }
+    .gir-board .grid {
+        padding: 16px;
+        gap: 16px;
     }
     .node .code,
     .node.gir-node .code {
@@ -587,13 +616,30 @@ svg.edges path.dimmed {
 /* Make GIR grids consistent with MR */
 .gir-board .grid {
     display: grid;
-    grid-template-columns: repeat(var(--tier-count, 5), 1fr);
     gap: 22px;
     padding: 24px;
-    width: 100%;
+    width: 100%; /* stretch to fill section */
     align-items: stretch;
     grid-auto-columns: 1fr;
     grid-template-rows: auto;
+}
+
+/* GIR width ratios by section */
+/* Row 1: Science Core 4/9, HASS 5/9 */
+.gir-row:first-of-type .gir-block:has(#gir-science) {
+    flex: 4 1 0;
+}
+.gir-row:first-of-type .gir-block:has(#gir-hass) {
+    flex: 5 1 0;
+}
+/* Row 2: Communication 2/5, Lab 1/5, PE 1/5, REST 1/5 */
+.gir-row:nth-of-type(2) .gir-block:has(#gir-communication) {
+    flex: 2 1 0;
+}
+.gir-row:nth-of-type(2) .gir-block:has(#gir-lab),
+.gir-row:nth-of-type(2) .gir-block:has(#gir-pe),
+.gir-row:nth-of-type(2) .gir-block:has(#gir-rest) {
+    flex: 1 1 0;
 }
 
 /* Ensure all grid columns have equal width */
@@ -609,14 +655,32 @@ svg.edges path.dimmed {
     justify-content: space-between;
     gap: 8px;
     margin-bottom: 6px;
+    flex-wrap: wrap;
 }
 .node .head .code {
     margin: 0;
     display: inline;
+    min-width: 0;
 }
 .node .head .tags {
     margin: 0;
     margin-left: auto;
+    flex: 0 0 auto;
+}
+
+/* When a course card gets narrow, stack tags under the code and left-align */
+@container (max-width: 260px) {
+    .head {
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: flex-start;
+    }
+    .head .tags {
+        margin-left: 0;
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 .tag-icon {
     width: 16px;
@@ -683,4 +747,7 @@ svg.edges path.dimmed {
 
 .custom-tooltip.show {
     opacity: 1;
+}
+.plan-board {
+    overflow-x: visible;
 }

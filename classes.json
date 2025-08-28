@@ -320,7 +320,10 @@
       "area": "other",
       "color": "var(--other)",
       "description": "Best rowing team in the world.",
-      "why": "Required as part of the PE requirement."
+      "why": "Required as part of the PE requirement.",
+      "tags": [
+        "PE"
+      ]
     },
     "A2_70": {
       "code": "2.70",
