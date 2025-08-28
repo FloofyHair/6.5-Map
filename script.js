@@ -352,16 +352,14 @@
     const planSvg = document.getElementById("plan-edges");
     const pePlanGrid = document.getElementById("pe-plan-grid");
     const searchInput = document.getElementById("search");
-    const resetBtn = document.getElementById("reset");
     const stage = document.getElementById("stage");
-    const testBadge = document.getElementById("testBadge");
     const info = document.getElementById("info");
     const infoClose = document.getElementById("infoClose");
     const infoTitle = document.getElementById("infoTitle");
     const infoCode = document.getElementById("infoCode");
     const infoDesc = document.getElementById("infoDesc");
     const infoWhy = document.getElementById("infoWhy");
-    const infoArea = document.getElementById("infoArea");
+    // infoArea is not present; no reference needed
     const infoSwatch = document.getElementById("infoSwatch");
     const infoTags = document.getElementById("infoTags");
 
@@ -460,13 +458,10 @@
 
             el.addEventListener("click", (e) => {
                 e.stopPropagation();
-                // GIR nodes can be clicked but don't trigger isolation/arrows
-                console.log("GIR node clicked:", id);
             });
             el.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    console.log("GIR node activated:", id);
                 }
             });
         }
@@ -834,16 +829,12 @@
         infoCode.textContent = d.code;
         infoDesc.textContent = d.description || "—";
         if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
-        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
-        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
-        if (infoTags) infoTags.replaceChildren(renderTagIcons(d.tags || []));
         infoWhy.textContent = d.why || "—";
         const color = d.color || strokeFor(d.area);
         infoSwatch.style.background = color;
         info.classList.add("visible");
     }
     function hideInfo() {
-        console.log("close");
         info.classList.remove("visible");
         // Clear course selection when hiding info panel
         isolatedSet = null;
@@ -930,25 +921,7 @@
         });
     new ResizeObserver(() => positionAll()).observe(grid);
     if (planGrid) new ResizeObserver(() => positionPlan()).observe(planGrid);
-    if (pePlanGrid)
-        new ResizeObserver(() => {
-            // PE plan has no edges; still adjust sizing
-            // Trigger reflow of nodes to keep consistent sizing
-            requestAnimationFrame(applyResponsiveSizing);
-        }).observe(pePlanGrid);
-
-    // Also observe GIR containers for responsive sizing
-    const girContainers = document.querySelectorAll(
-        ".gir-board, .section-block"
-    );
-    girContainers.forEach((container) => {
-        new ResizeObserver(() => {
-            // Trigger responsive updates for GIR nodes
-            container.querySelectorAll(".node").forEach((node) => {
-                node.style.fontSize = window.innerWidth <= 1200 ? "11px" : "";
-            });
-        }).observe(container);
-    });
+    // No extra observers needed for PE/GIR sizing; CSS handles responsiveness
 
     // Function to apply responsive sizing to all nodes
     function applyResponsiveSizing() {

@@ -56,7 +56,7 @@
     /* Tag color variables */
     --tag-fall: #e67e22;
     --tag-spring: #27ae60;
-    --tag-iap: #16a085;
+    /* --tag-iap defined below for consistency */
     --tag-summer: #d35400;
     --tag-undergrad: #2980b9;
     --tag-grad: #8e44ad;
@@ -682,29 +682,6 @@ svg.edges path.dimmed {
         justify-content: flex-start;
     }
 }
-.tag-icon {
-    width: 16px;
-    height: 16px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--tag-color, var(--muted));
-}
-.info .tag-icons .tag-icon {
-    width: 18px;
-    height: 18px;
-}
-.tag-icon svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-.tag-icon svg,
-.tag-icon svg * {
-    fill: currentColor !important;
-    stroke: currentColor;
-}
-
 /* Mask-based tag icons: color via background, shape via external SVG */
 .tag-icon {
     width: 16px;
